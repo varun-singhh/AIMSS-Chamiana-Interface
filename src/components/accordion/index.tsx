@@ -31,7 +31,7 @@ const isAccordionExpanded = (parentIndex: string, accordionIndex: string) => {
 
       return (
         <Accordion
-          key={accordionIndex}
+          key={index}
           expanded={expandedIndexes[parentIndex] === accordionIndex}
           onChange={() => handleAccordionChange(parentIndex, accordionIndex)}
           sx={{ marginTop: '15px' }}

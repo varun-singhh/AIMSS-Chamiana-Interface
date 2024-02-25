@@ -1,13 +1,25 @@
+import { useState } from "react";
 import type { ReactElement } from "react";
 import PageContainer from "../../../src/components/container/PageContainer";
 import DashboardCard from "../../../src/components/shared/DashboardCard";
 import FullLayout from "../../../src/layouts/full/FullLayout";
 import NestedAccordion from "../../../src/components/accordion";
 import DynamicForm from "../../../src/components/form";
+import IconButton from "@mui/material/IconButton";
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+import { styled } from "@mui/material/styles";
+import { Button, CircularProgress } from "@mui/material";
+
+const FloatingButtonContainer = styled("div")({
+  position: "fixed",
+  bottom: "20px",
+  right: "20px",
+  zIndex: 1000,
+});
 
 const patientIdentificationData = [
   {
-    title: "",
+    title: "Patient Identification",
     children: [
       {
         field: "Name",
@@ -47,9 +59,9 @@ const patientIdentificationData = [
   },
 ];
 
-const sociaDemographicData = [
+const socioDemographicData = [
   {
-    title: "",
+    title: "Socio Demographics",
     children: [
       {
         field: "Age",
@@ -83,7 +95,7 @@ const sociaDemographicData = [
 
 const firstMedicalContactData = [
   {
-    title: "",
+    title: "First Medical Contact",
     children: [
       {
         field: "Name of Hub Center",
@@ -101,7 +113,7 @@ const firstMedicalContactData = [
 
 const cvRiskFactorDta = [
   {
-    title: "",
+    title: "Cv Risk Factors",
     children: [
       {
         field: "Hypertension",
@@ -137,7 +149,7 @@ const cvRiskFactorDta = [
 
 const acsSymptomsData = [
   {
-    title: "",
+    title: "Symptoms",
     children: [
       {
         field: "Chest Pain",
@@ -194,7 +206,7 @@ const acsSymptomsData = [
 
 const acsExaminationData = [
   {
-    title: "",
+    title: "Examination",
     children: [
       {
         field: "SBP",
@@ -230,7 +242,7 @@ const acsExaminationData = [
 
 const acsIndexECGData = [
   {
-    title: "",
+    title: "Index Ecg",
     children: [
       {
         field: "Rythm",
@@ -263,7 +275,7 @@ const acsIndexECGData = [
 
 const acsTropTiData = [
   {
-    title: "",
+    title: "Trop Ti",
     children: [
       {
         field: "Trop T/I",
@@ -276,7 +288,7 @@ const acsTropTiData = [
 
 const acsBioChemistryData = [
   {
-    title: "",
+    title: "Biochemistry",
     children: [
       {
         field: "Blood Sugar Test",
@@ -346,7 +358,7 @@ const acsBioChemistryData = [
 
 const acsTreatmentGivenAtFMCData = [
   {
-    title: "",
+    title: "Treatment Given At Fmc",
     children: [
       {
         field: "Anti thrombotic Therapy",
@@ -446,12 +458,12 @@ const acsTreatmentGivenAtFMCData = [
 
 const acsTreatmentDuringHospitalData = [
   {
-    title: "",
+    title: "Treatment During Hospital",
     children: [
       {
         field: "Antiplatelets",
         type: "multiple",
-        options: ["Aspirin", "Clopidogrel", "Prasugrel", "Prasugrel"],
+        options: ["Aspirin", "Clopidogrel", "Prasugrel"],
       },
       {
         field: "Statin",
@@ -551,7 +563,7 @@ const acsTreatmentDuringHospitalData = [
 
 const acsDiagnosisData = [
   {
-    title: "",
+    title: "Diagnosis",
     children: [
       {
         field: "Diagnosis",
@@ -564,7 +576,7 @@ const acsDiagnosisData = [
 
 const acsAtDischargeData = [
   {
-    title: "",
+    title: "At Discharge",
     children: [
       {
         field: "Antiplatelets",
@@ -575,35 +587,35 @@ const acsAtDischargeData = [
         field: "Statin",
         type: "boolean",
         isTrue: [
-            {
-                field:"Statin Type",
-                type:"menu",
-                menuItem:["Atorvastatin","Rosuastatin","Pivastatin"]
-            },
-            {
-                field:"Statin Dose",
-                type:"number",
-            }
+          {
+            field: "Statin Type",
+            type: "menu",
+            menuItem: ["Atorvastatin", "Rosuastatin", "Pivastatin"],
+          },
+          {
+            field: "Statin Dose",
+            type: "number",
+          },
         ],
       },
       {
         field: "Blockers",
         type: "boolean",
         isTrue: [
-            {
-                field:"Blockers Type",
-                type:"menu",
-                menuItem:["Carvidelol","Metoprolol","Bisoprolol"]
-            },
-            {
-                field:"Blockers Dose",
-                type:"number",
-            },
-            {
-                field:"Dose Frequency",
-                type:"menu",
-                menuItem:["Once a day","Twice a day"]
-            },
+          {
+            field: "Blockers Type",
+            type: "menu",
+            menuItem: ["Carvidelol", "Metoprolol", "Bisoprolol"],
+          },
+          {
+            field: "Blockers Dose",
+            type: "number",
+          },
+          {
+            field: "Blocker Dose Frequency",
+            type: "menu",
+            menuItem: ["Once a day", "Twice a day"],
+          },
         ],
       },
       {
@@ -614,20 +626,20 @@ const acsAtDischargeData = [
         field: "RAAS Inhibitor",
         type: "boolean",
         isTrue: [
-            {
-                field:"Blockers Type",
-                type:"menu",
-                menuItem:["Ace inhibitor","ARB"]
-            },
-            {
-                field:"RAAS Inhibitor Dose",
-                type:"number",
-            },
-            {
-                field:"Dose Frequency",
-                type:"menu",
-                menuItem:["Once a day","Twice a day"]
-            },
+          {
+            field: "RAAS Inhibitor Type",
+            type: "menu",
+            menuItem: ["Ace inhibitor", "ARB"],
+          },
+          {
+            field: "RAAS Inhibitor Dose",
+            type: "number",
+          },
+          {
+            field: "RAAS Inhibitor Dose Frequency",
+            type: "menu",
+            menuItem: ["Once a day", "Twice a day"],
+          },
         ],
       },
       {
@@ -648,21 +660,27 @@ const acsAtDischargeData = [
 
 const acsHospitalOutcomeData = [
   {
-    title: "",
+    title: "Hospital Outcome",
     children: [
       {
         field: "Death",
         type: "boolean",
+        isFalse: [
+          {
+            field: "Date of Discharge",
+            type: "date",
+          },
+        ],
       },
       {
         field: "Cardiac",
         type: "boolean",
         isTrue: [
-            {
-                field:"Cardiac Type",
-                type:"menu",
-                menuItem:["Heart Failure","Sudden Death"]
-            }
+          {
+            field: "Cardiac Type",
+            type: "menu",
+            menuItem: ["Heart Failure", "Sudden Death"],
+          },
         ],
       },
       {
@@ -673,24 +691,29 @@ const acsHospitalOutcomeData = [
         field: "Stroke",
         type: "boolean",
         isTrue: [
-            {
-                field:"Type of Stroke",
-                type:"menu",
-                menuItem:["Hemorrhagic","Ischemic stroke","Heart Failure","Sudden Death"]
-            },
+          {
+            field: "Type of Stroke",
+            type: "menu",
+            menuItem: [
+              "Hemorrhagic",
+              "Ischemic stroke",
+              "Heart Failure",
+              "Sudden Death",
+            ],
+          },
         ],
       },
       {
-        field: "Major Bleeding ( GI bleed/Hematuria/Intracranial)",
+        field: "Major Bleeding( GI bleed/Hematuria/Intracranial)",
         type: "boolean",
-      }
+      },
     ],
   },
 ];
 
 const timeDelayPresentataionData = [
   {
-    title: "",
+    title: "Time Delays",
     children: [
       {
         field: "Date of Symptoms on set",
@@ -698,7 +721,7 @@ const timeDelayPresentataionData = [
       },
       {
         field: "Time of Symptoms on set",
-        type: "date",
+        type: "time",
       },
       {
         field: "Date of reporting to hospital",
@@ -706,98 +729,235 @@ const timeDelayPresentataionData = [
       },
       {
         field: "Time of reporting to hospital",
-        type: "date",
+        type: "time",
       },
     ],
   },
 ];
 
-const acsFormData = [
+const acsDoctorAssigned = [
   {
-    title: "Patient Identification",
-    content: <DynamicForm formData={patientIdentificationData} />,
-  },
-  {
-    title: "Socio Demographics",
-    content: <DynamicForm formData={sociaDemographicData} />,
-  },
-  {
-    title: "First Medical Contact",
-    content: <DynamicForm formData={firstMedicalContactData} />,
-  },
-  {
-    title: "CV Risk Factors",
-    content: <DynamicForm formData={cvRiskFactorDta} />,
-  },
-  {
-    title: "Presentation",
+    title: "Doctor Assigned",
     children: [
       {
-        title: "Time Delays",
-        content: <DynamicForm formData={timeDelayPresentataionData} />,
+        field: "Doctor Name",
+        type: "string",
       },
       {
-        title: "Symptoms",
-        content: <DynamicForm formData={acsSymptomsData} />,
-      },
-      {
-        title: "Examination",
-        content: <DynamicForm formData={acsExaminationData} />,
-      },
-      {
-        title: "Index ECG",
-        content: <DynamicForm formData={acsIndexECGData} />,
-      },
-      {
-        title: "Trop T/I",
-        content: <DynamicForm formData={acsTropTiData} />,
-      },
-      {
-        title: "Biochemistry",
-        content: <DynamicForm formData={acsBioChemistryData} />,
-      },
-      {
-        title: "Diagnosis",
-        content: <DynamicForm formData={acsDiagnosisData} />,
-      },
-      {
-        title: "Treatment given at FMC at admission",
-        content: <DynamicForm formData={acsTreatmentGivenAtFMCData} />,
-      },
-      {
-        title: "Treatment during hospital",
-        content: <DynamicForm formData={acsTreatmentDuringHospitalData} />,
-      },
-      {
-        title: "At Discharge",
-        content: <DynamicForm formData={acsAtDischargeData} />,
+        field: "Doctor Id",
+        type: "string",
       },
     ],
   },
-  {
-    title: "Hospital Outcome",
-    content: <DynamicForm formData={acsHospitalOutcomeData} />,
-  },
 ];
 
+const ACSCaseFormPage = () => {
+  const [acsData, setACSData] = useState({});
+  const [loading, setLoading] = useState(false);
+  const handleFormDataUpdate = (data: any) => {
+    setACSData((prevData) => {
+      return {
+        ...prevData,
+        ...data,
+      };
+    });
+  };
 
-const SamplePage = () => {
+  const acsFormData = [
+    {
+      title: "Patient Identification",
+      content: (
+        <DynamicForm
+          formData={patientIdentificationData}
+          onFormDataUpdate={handleFormDataUpdate}
+        />
+      ),
+    },
+    {
+      title: "Socio Demographics",
+      content: (
+        <DynamicForm
+          formData={socioDemographicData}
+          onFormDataUpdate={handleFormDataUpdate}
+        />
+      ),
+    },
+    {
+      title: "First Medical Contact",
+      content: (
+        <DynamicForm
+          formData={firstMedicalContactData}
+          onFormDataUpdate={handleFormDataUpdate}
+        />
+      ),
+    },
+    {
+      title: "CV Risk Factors",
+      content: (
+        <DynamicForm
+          formData={cvRiskFactorDta}
+          onFormDataUpdate={handleFormDataUpdate}
+        />
+      ),
+    },
+    {
+      title: "Presentation",
+      children: [
+        {
+          title: "Time Delays",
+          content: (
+            <DynamicForm
+              formData={timeDelayPresentataionData}
+              onFormDataUpdate={handleFormDataUpdate}
+            />
+          ),
+        },
+        {
+          title: "Symptoms",
+          content: (
+            <DynamicForm
+              formData={acsSymptomsData}
+              onFormDataUpdate={handleFormDataUpdate}
+            />
+          ),
+        },
+        {
+          title: "Examination",
+          content: (
+            <DynamicForm
+              formData={acsExaminationData}
+              onFormDataUpdate={handleFormDataUpdate}
+            />
+          ),
+        },
+        {
+          title: "Index ECG",
+          content: (
+            <DynamicForm
+              formData={acsIndexECGData}
+              onFormDataUpdate={handleFormDataUpdate}
+            />
+          ),
+        },
+        {
+          title: "Trop T/I",
+          content: (
+            <DynamicForm
+              formData={acsTropTiData}
+              onFormDataUpdate={handleFormDataUpdate}
+            />
+          ),
+        },
+        {
+          title: "Biochemistry",
+          content: (
+            <DynamicForm
+              formData={acsBioChemistryData}
+              onFormDataUpdate={handleFormDataUpdate}
+            />
+          ),
+        },
+        {
+          title: "Diagnosis",
+          content: (
+            <DynamicForm
+              formData={acsDiagnosisData}
+              onFormDataUpdate={handleFormDataUpdate}
+            />
+          ),
+        },
+        {
+          title: "Treatment given at FMC at admission",
+          content: (
+            <DynamicForm
+              formData={acsTreatmentGivenAtFMCData}
+              onFormDataUpdate={handleFormDataUpdate}
+            />
+          ),
+        },
+        {
+          title: "Treatment during hospital",
+          content: (
+            <DynamicForm
+              formData={acsTreatmentDuringHospitalData}
+              onFormDataUpdate={handleFormDataUpdate}
+            />
+          ),
+        },
+        {
+          title: "At Discharge",
+          content: (
+            <DynamicForm
+              formData={acsAtDischargeData}
+              onFormDataUpdate={handleFormDataUpdate}
+            />
+          ),
+        },
+      ],
+    },
+    {
+      title: "Hospital Outcome",
+      content: (
+        <DynamicForm
+          formData={acsHospitalOutcomeData}
+          onFormDataUpdate={handleFormDataUpdate}
+        />
+      ),
+    },
+    {
+      title: "Doctor Assigned",
+      content: (
+        <DynamicForm
+          formData={acsDoctorAssigned}
+          onFormDataUpdate={handleFormDataUpdate}
+        />
+      ),
+    },
+  ];
+
+  const handleGoBack = () => {
+    window.history.back(); // Go back to the previous page
+  };
+
+  const handleSubmitWithLoader = () => {
+    setLoading(true);
+    setTimeout(() => {
+      console.log(acsData);
+      setLoading(false);
+    }, 5000);
+  };
+
   return (
-    <PageContainer
-      title="ACS Case Form"
-      description="this is ACS Case Form page"
-    >
-      <DashboardCard title="ACS Case Form">
-        <>
-          {/* <DynamicForm formData={formData} /> */}
-          <NestedAccordion data={acsFormData} />
-        </>
-      </DashboardCard>
-    </PageContainer>
+    <>
+      {/* Tile for creating a new doctor */}
+      <FloatingButtonContainer>
+        <Button
+          variant="contained"
+          onClick={handleSubmitWithLoader}
+          disabled={loading}
+        >
+          {loading ? <CircularProgress size={24} /> : "Submit Form"}
+        </Button>
+      </FloatingButtonContainer>
+      <IconButton onClick={handleGoBack}>
+        <ArrowBackIcon />
+      </IconButton>
+      <PageContainer
+        title="ACS Case Form"
+        description="this is ACS Case Form page"
+      >
+        <DashboardCard title="ACS Case Form">
+          <>
+            {/* <DynamicForm formData={formData} /> */}
+            <NestedAccordion data={acsFormData} />
+          </>
+        </DashboardCard>
+      </PageContainer>
+    </>
   );
 };
 
-export default SamplePage;
-SamplePage.getLayout = function getLayout(page: ReactElement) {
+export default ACSCaseFormPage;
+ACSCaseFormPage.getLayout = function getLayout(page: ReactElement) {
   return <FullLayout>{page}</FullLayout>;
 };

@@ -67,7 +67,7 @@ const NavItem = ({ item, level, pathDirect, onClick }: ItemType) => {
           component={Link}
           href={item.href}
           disabled={item.disabled}
-          selected={pathDirect === item.href}
+          selected={pathDirect === item.href || "/"+pathDirect.split("/")[1] === item.href}
           target={item.external ? "_blank" : ""}
           onClick={onClick}
         >

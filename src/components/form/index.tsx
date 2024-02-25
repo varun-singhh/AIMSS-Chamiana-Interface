@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   TextField,
   Grid,
@@ -26,8 +26,9 @@ interface FormData {
   }[];
 }
 
-const DynamicForm: React.FC<{ formData: FormData[] }> = ({ formData }) => {
+type FormDataUpdateCallback = (formData: any) => void;
 
+const DynamicForm: React.FC<{ formData: FormData[], onFormDataUpdate: FormDataUpdateCallback }> = ({ formData, onFormDataUpdate }) => {
   // State to store values entered by the user for each field
   const [formValues, setFormValues] = useState<{ [fieldName: string]: any }>(
     {}
@@ -38,32 +39,39 @@ const DynamicForm: React.FC<{ formData: FormData[] }> = ({ formData }) => {
     setFormValues({ ...formValues, [fieldName]: value });
   };
 
-  const handleSubmit = () => {
-    const formDataObject: { [title: string]: { [field: string]: any } } = {};
-    formData.forEach(({ title, children }) => {
-      const fieldValues: { [field: string]: any } = {};
-      children.forEach(({ field, type, isTrue }) => {
-        if (type === "boolean" && formValues[field]) {
-          // If boolean field is true, include fields inside isTrue
-          isTrue?.forEach(({ field: trueField }) => {
-            fieldValues[trueField] = formValues[trueField] || null;
-          });
-        } else if (type === "boolean" && !formValues[field]) {
-          // If boolean field is false, include null values for fields inside isTrue
-          isTrue?.forEach(({ field: trueField }) => {
-            fieldValues[trueField] = null;
-          });
-        } else {
-          // Include non-boolean fields directly
-          fieldValues[field] = formValues[field];
-        }
-      });
-      formDataObject[title] = fieldValues;
-    });
-    console.log(formDataObject);
+  const convertFieldName = (fieldName: string) => {
+    return fieldName.toLowerCase().replace(/\s+/g, "_");
   };
 
-  
+  useEffect(() => {
+    const loggingInterval = setInterval(() => {
+      const formDataObject: { [title: string]: { [field: string]: any } } = {};
+      formData.forEach(({ title, children }) => {
+        const fieldValues: { [field: string]: any } = {};
+        children.forEach(({ field, type, isTrue, menuItem }) => {
+          const formattedField = convertFieldName(field); // Convert field name
+          if (type === "boolean") {
+            fieldValues[formattedField] = formValues[field] || false;
+            if (formValues[field] && isTrue) {
+              isTrue.forEach(({ field: trueField }) => {
+                fieldValues[convertFieldName(trueField)] =
+                  formValues[trueField] || null;
+              });
+            }
+          } else if (type === "menu" && formValues[field]) {
+            fieldValues[formattedField] = formValues[field];
+          } else {
+            fieldValues[formattedField] = formValues[field] || null;
+          }
+        });
+        formDataObject[convertFieldName(title)] = fieldValues; // Convert title
+      });
+      onFormDataUpdate(formDataObject)
+    }, 4500);
+
+    // Clear the interval on component unmount
+    return () => clearInterval(loggingInterval);
+  }, [formValues]);
 
   const renderField = (fieldData: FormData["children"][number]) => {
     switch (fieldData.type) {
@@ -117,13 +125,20 @@ const DynamicForm: React.FC<{ formData: FormData[] }> = ({ formData }) => {
                 <FormControlLabel value="no" control={<Radio />} label="No" />
               </RadioGroup>
             </Grid>
-            <Grid item xs={12}>
-              {formValues[fieldData.field]
-                ? fieldData.isTrue &&
-                  fieldData.isTrue.map((subField) => renderField(subField))
-                : fieldData.isFalse &&
-                  fieldData.isFalse.map((subField) => renderField(subField))}
-            </Grid>
+            {formValues[fieldData.field]
+  ? fieldData.isTrue &&
+    fieldData.isTrue.map((subField, index) => (
+      <Grid item xs={12} key={`${fieldData.field}-true-${index}`}>
+        {renderField(subField)}
+      </Grid>
+    ))
+  : fieldData.isFalse &&
+    fieldData.isFalse.map((subField, index) => (
+      <Grid item xs={12} key={`${fieldData.field}-false-${index}`}>
+        {renderField(subField)}
+      </Grid>
+    ))}
+
           </Grid>
         );
 
@@ -226,25 +241,25 @@ const DynamicForm: React.FC<{ formData: FormData[] }> = ({ formData }) => {
     <div>
       {formData.map((form, index) => (
         <div key={index}>
-          {form.title != "" ? (
+          {/* {form.title != "" ? (
             <Typography variant="h5" mt={1}>
               {form.title}
             </Typography>
           ) : (
             <></>
-          )}
+          )} */}
           {form.children.map((field) => (
             <div key={field.field}>{renderField(field)}</div>
           ))}
         </div>
       ))}
-      <Button
+      {/* <Button
         variant="contained"
         onClick={handleSubmit}
         sx={{ margin: "10px 4px" }}
       >
         Submit
-      </Button>
+      </Button> */}
     </div>
   );
 };
