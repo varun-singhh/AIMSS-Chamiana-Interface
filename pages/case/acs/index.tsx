@@ -9,6 +9,9 @@ import IconButton from "@mui/material/IconButton";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import { styled } from "@mui/material/styles";
 import { Button, CircularProgress } from "@mui/material";
+import { useSelector, useDispatch } from "react-redux";
+import { RootState, AppDispatch } from "../../../store";
+import { createForm } from "../../../actions/forms";
 
 const FloatingButtonContainer = styled("div")({
   position: "fixed",
@@ -752,7 +755,12 @@ const acsDoctorAssigned = [
 ];
 
 const ACSCaseFormPage = () => {
-  const [acsData, setACSData] = useState({});
+  const [acsData, setACSData] = useState({
+    doctor_assigned: {
+      doctor_name: "",
+      doctor_id: "",
+    },
+  });
   const [loading, setLoading] = useState(false);
   const handleFormDataUpdate = (data: any) => {
     setACSData((prevData) => {
@@ -919,12 +927,26 @@ const ACSCaseFormPage = () => {
     window.history.back(); // Go back to the previous page
   };
 
+  const state = useSelector((state: RootState) => state);
+  const dispatch: AppDispatch = useDispatch();
+
   const handleSubmitWithLoader = () => {
     setLoading(true);
     setTimeout(() => {
       console.log(acsData);
       setLoading(false);
-    }, 5000);
+      dispatch(
+        createForm(
+          "ACS",
+          "case",
+          "123",
+          "admin",
+          acsData.doctor_assigned.doctor_name,
+          acsData.doctor_assigned.doctor_id,
+          acsData
+        )
+      );
+    }, 4000);
   };
 
   return (

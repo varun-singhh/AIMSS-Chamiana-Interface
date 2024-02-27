@@ -67,7 +67,7 @@ const DynamicForm: React.FC<{ formData: FormData[], onFormDataUpdate: FormDataUp
         formDataObject[convertFieldName(title)] = fieldValues; // Convert title
       });
       onFormDataUpdate(formDataObject)
-    }, 4500);
+    }, 1000);
 
     // Clear the interval on component unmount
     return () => clearInterval(loggingInterval);
