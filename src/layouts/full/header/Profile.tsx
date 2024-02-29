@@ -11,9 +11,15 @@ import {
   ListItemText,
 } from "@mui/material";
 
-import { IconListCheck, IconMail, IconUser } from "@tabler/icons-react";
+import { IconUser } from "@tabler/icons-react";
+import { useSelector, useDispatch } from "react-redux";
+import { RootState, AppDispatch } from "../../../../store";
+import { logout } from "../../../../actions/auth";
 
-const Profile = () => {
+const Profile = (rootState: any) => {
+  const state = useSelector((state: RootState) => state);
+  const dispatch: AppDispatch = useDispatch();
+
   const [anchorEl2, setAnchorEl2] = useState(null);
   const handleClick2 = (event: any) => {
     setAnchorEl2(event.currentTarget);
@@ -21,6 +27,8 @@ const Profile = () => {
   const handleClose2 = () => {
     setAnchorEl2(null);
   };
+
+  console.log(rootState)
 
   return (
     <Box>
@@ -63,13 +71,19 @@ const Profile = () => {
           },
         }}
       >
-        <MenuItem>
-          <ListItemIcon>
-            <IconUser width={20} />
-          </ListItemIcon>
-          <ListItemText>My Profile</ListItemText>
-        </MenuItem>
-        <MenuItem>
+        {rootState?.auth?.loggedIn ? (
+          <MenuItem onClick={()=>{
+            window.location.href = "/profile"
+          }}>
+            <ListItemIcon>
+              <IconUser width={20} />
+            </ListItemIcon>
+            <ListItemText>My Profile</ListItemText>
+          </MenuItem>
+        ) : (
+           <MenuItem></MenuItem>
+        )}
+        {/* <MenuItem>
           <ListItemIcon>
             <IconMail width={20} />
           </ListItemIcon>
@@ -80,7 +94,7 @@ const Profile = () => {
             <IconListCheck width={20} />
           </ListItemIcon>
           <ListItemText>My Tasks</ListItemText>
-        </MenuItem>
+        </MenuItem> */}
         <Box mt={1} py={1} px={2}>
           <Button
             href="/authentication/login"
@@ -88,6 +102,10 @@ const Profile = () => {
             color="primary"
             component={Link}
             fullWidth
+            onClick={()=>{
+              dispatch(logout())
+              window.location.href="/authentication/login"
+            }}
           >
             Logout
           </Button>

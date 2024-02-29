@@ -15,8 +15,8 @@ import Link from "next/link";
 import { useSelector, useDispatch } from "react-redux";
 import { RootState, AppDispatch } from "../../../store";
 import { login } from "../../../actions/auth";
+import { useRouter } from 'next/router';
 import CustomTextField from "../../../src/components/forms/theme-elements/CustomTextField";
-import { Navigate } from "react-router-dom";
 
 interface loginType {
   title?: string;
@@ -25,6 +25,7 @@ interface loginType {
 }
 
 const AuthLogin = ({ title, subtitle, subtext }: loginType) => {
+  const router = useRouter();
   const state = useSelector((state: RootState) => state);
   const dispatch: AppDispatch = useDispatch();
 
@@ -35,10 +36,9 @@ const AuthLogin = ({ title, subtitle, subtext }: loginType) => {
   const [useEmail, setUseEmail] = useState(true);
   const [phoneError, setPhoneError] = useState(false);
   const [loggedInStatus, setloggedInStatus] = useState(false);
-  const [loading,setLoading] = useState(false);
 
   const handleInputChange = (
-    event: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+    event: any
   ) => {
     const { name, value } = event.target;
     if (name === "phone") {
@@ -62,12 +62,7 @@ const AuthLogin = ({ title, subtitle, subtext }: loginType) => {
     setUseEmail(!useEmail);
   };
 
-  const handleLoading = (val: boolean) =>{
-    setLoading(val)
-  }
-
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-    setLoading(true)
     setloggedInStatus(false);
     event.preventDefault();
     if (useEmail) {
@@ -76,7 +71,7 @@ const AuthLogin = ({ title, subtitle, subtext }: loginType) => {
           email,
           password,
           permission,
-        },handleLoading)
+        })
       );
     } else {
       dispatch(
@@ -84,16 +79,14 @@ const AuthLogin = ({ title, subtitle, subtext }: loginType) => {
           phone,
           password,
           permission,
-        },handleLoading)
+        })
       );
     }
   };
 
     useEffect(() => {
     if (state.auth.loggedIn) {
-      setTimeout(() => {
-        window.location.href = "/";
-      }, 500); // Redirect after a short delay for better user experience
+       router.push('/');
     }
   }, [state.auth.loggedIn]);
 
@@ -230,11 +223,6 @@ const AuthLogin = ({ title, subtitle, subtext }: loginType) => {
             </Typography>
           </Stack>
         </Stack>
-        {loggedInStatus && state.auth?.loggedIn && (
-        <Typography variant="body1" color="" alignContent={"center"} mt={2} mb={2}>
-          Successfully Logged In!
-        </Typography>
-      )}
       {loggedInStatus && state.auth?.data?.errors?.length > 0 && (
         <Typography variant="body1" color="error" alignContent={"center"} mt={2} mb={2}>
           {state.auth.data?.errors[0]?.reason}

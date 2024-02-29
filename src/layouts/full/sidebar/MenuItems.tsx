@@ -1,5 +1,5 @@
 import {
-  IconAperture, IconCopy, IconLayoutDashboard,IconDoor,IconStethoscope,IconUser, IconListDetails, IconLogin, IconMoodHappy, IconSettings, IconUserPlus
+  IconAperture, IconCopy, IconLayoutDashboard,IconReceiptRefund,IconStethoscope, IconUserCircle, IconDisabled,IconListDetails, IconLogin, IconMoodHappy, IconSettings, IconUserPlus
 } from '@tabler/icons-react';
 
 import { uniqueId } from 'lodash';
@@ -18,7 +18,7 @@ const Menuitems = [
   {
     id: uniqueId(),
     title: 'Patient',
-    icon: IconUser,
+    icon: IconDisabled,
     href: '/patient',
   },
   {
@@ -36,8 +36,14 @@ const Menuitems = [
   {
     id: uniqueId(),
     title: 'Followup Forms',
-    icon: IconDoor,
+    icon: IconReceiptRefund,
     href: '/followup',
+  },
+    {
+    id: uniqueId(),
+    title: 'Profile',
+    icon: IconUserCircle,
+    href: '/profile',
   },
   {
     navlabel: true,

@@ -14,7 +14,7 @@ interface ErrorState {
 }
 
 const initialState: ErrorState = {
-  loading: true,
+  loading: false,
   err: null,
   message: null,
 };
@@ -29,14 +29,14 @@ const errorReducer: Reducer<ErrorState> = (state = initialState, action) => {
     case ERROR_FETCHING_FORM:
       return {
         ...state,
-        loading: !state.loading,
+        loading: false,
         err: action.payload,
         message: 'failed to fetch form',
       };
     case ERROR_UPLOADING_FORM:
       return {
         ...state,
-        loading: !state.loading,
+        loading: false,
         err: action.payload,
         message: 'failed to upload form',
       };

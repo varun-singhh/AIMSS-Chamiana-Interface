@@ -1,6 +1,7 @@
 export const LOADING = "LOADING";
 export const SET_ERROR = "SET_ERROR";
 export const USER_LOGIN = "USER_LOGIN";
+export const LOGOUT = ""
 export const LOAD_USER = "LOAD_USER";
 export const REQUEST_OTP = "REQUEST_OTP"
 export const REQUEST_OTP_FAILED = "REQUEST_OTP_FAILED"

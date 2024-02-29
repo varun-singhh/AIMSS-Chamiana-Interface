@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { styled, Container, Box } from "@mui/material";
-
+import { useSelector } from "react-redux";
+import { RootState } from "../../../store";
 import Header from "./header/Header";
 import Sidebar from "./sidebar/Sidebar";
 
@@ -24,10 +25,10 @@ interface Props {
 }
 
 const FullLayout: React.FC<Props> = ({ children }) => {
+  const state = useSelector((state: RootState) => state);
   const [isSidebarOpen, setSidebarOpen] = useState(true);
   const [isMobileSidebarOpen, setMobileSidebarOpen] = useState(false);
-  // const lgUp = useMediaQuery((theme) => theme.breakpoints.up("lg"));
-
+  
   return (
     <MainWrapper className="mainwrapper">
       {/* ------------------------------------------- */}
@@ -47,6 +48,7 @@ const FullLayout: React.FC<Props> = ({ children }) => {
         {/* ------------------------------------------- */}
         <Header
           toggleMobileSidebar={() => setMobileSidebarOpen(true)}
+          auth = {state}
         />
         {/* ------------------------------------------- */}
         {/* PageContent */}

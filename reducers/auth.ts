@@ -6,6 +6,7 @@ import {
   LOADING,
   REQUEST_OTP,
   REQUEST_OTP_FAILED,
+  LOGOUT
 } from "../actions/types";
 
 interface AuthState {
@@ -45,6 +46,7 @@ export default function formReducer(
       return {
         ...state,
         loading: false,
+        loggedIn: false,
         data: action.payload,
         message: "user registered successfully",
       };
@@ -52,6 +54,7 @@ export default function formReducer(
       return {
         ...state,
         loading: false,
+        loggedIn: false,
         data: action.payload,
         message: "otp sent successfully",
       };
@@ -67,6 +70,7 @@ export default function formReducer(
       return {
         ...state,
         loading: false,
+        loggedIn: false,
         data: action.payload,
         message: "failed to register user",
       };
@@ -74,6 +78,7 @@ export default function formReducer(
       return {
         ...state,
         loading: false,
+        loggedIn: false,
         data: action.payload,
         message: "failed to send otp",
       };
@@ -81,9 +86,17 @@ export default function formReducer(
       return {
         ...state,
         loading: false,
+        loggedIn: false,
         data: action.payload,
         message: "failed to login",
       };
+    case LOGOUT: 
+      return {
+        loading: false,
+        data: null,
+        loggedIn:false,
+        message: "logged out",
+      }
     default:
       return state;
   }

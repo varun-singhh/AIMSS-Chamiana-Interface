@@ -1,5 +1,5 @@
 import type { ReactElement, ReactNode } from "react";
-
+import ProgressBar from '@badrap/bar-of-progress';
 import type { NextPage } from "next";
 import Head from "next/head";
 import { AppProps } from "next/app";
@@ -10,9 +10,20 @@ import createEmotionCache from "../src/createEmotionCache";
 import { baselightTheme } from "../src/theme/DefaultColors";
 import store from "../store";
 import { Provider } from "react-redux";
+import { Router } from 'next/dist/client/router';
 
+const progress = new ProgressBar({
+  size: 4,
+  color: '#0384fc',
+  className: 'z-50',
+  delay: 100,
+});
 // Client-side cache, shared for the whole session of the user in the browser.
 const clientSideEmotionCache = createEmotionCache();
+
+Router.events.on('routeChangeStart', progress.start);
+Router.events.on('routeChangeComplete', progress.finish);
+Router.events.on('routeChangeError', progress.finish);
 
 type NextPageWithLayout = NextPage & {
   getLayout?: (page: ReactElement) => ReactNode;
@@ -31,17 +42,17 @@ const MyApp = (props: MyAppProps) => {
 
   return (
     <CacheProvider value={emotionCache}>
-      <Provider store={store}>
-        <Head>
-          <meta name="viewport" content="initial-scale=1, width=device-width" />
-          <title>AIMSS Chamiana</title>
-        </Head>
-        <ThemeProvider theme={theme}>
-          {/* CssBaseline kickstart an elegant, consistent, and simple baseline to build upon. */}
-          <CssBaseline />
+      <Head>
+        <meta name="viewport" content="initial-scale=1, width=device-width" />
+        <title>AIMSS Chamiana</title>
+      </Head>
+      <ThemeProvider theme={theme}>
+        {/* CssBaseline kickstart an elegant, consistent, and simple baseline to build upon. */}
+        <CssBaseline />
+        <Provider store={store}>
           {getLayout(<Component {...pageProps} />)}
-        </ThemeProvider>
-      </Provider>
+        </Provider>
+      </ThemeProvider>
     </CacheProvider>
   );
 };

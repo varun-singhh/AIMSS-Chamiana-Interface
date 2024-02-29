@@ -3,6 +3,7 @@ import {
   CREATING_FORM,
   LOADING,
   DELETING_FORM,
+  LOGOUT
 } from "../actions/types";
 
 interface FormState {
@@ -19,6 +20,7 @@ const initialState: FormState = {
 
 type FormAction =
   | { type: typeof LOADING }
+  | { type: typeof LOGOUT }
   | { type: typeof FETCHING_FORM_FROM_SERVER; payload: any }
   | { type: typeof CREATING_FORM; payload: any }
   | { type: typeof DELETING_FORM; payload: any };
@@ -54,6 +56,8 @@ export default function formReducer(
         data: action.payload,
         message: "form deleted successfully",
       };
+    case LOGOUT: 
+      return initialState
     default:
       return state;
   }
