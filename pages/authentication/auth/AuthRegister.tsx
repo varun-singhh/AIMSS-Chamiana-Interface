@@ -88,11 +88,11 @@ const AuthRegister = ({ title, subtitle, subtext }: registerType) => {
     }
   };
 
-  //   useEffect(() => {
-  //     if (authState?.data !== null) {
-  //       localStorage.setItem("token", authState?.data?.token);
-  //     }
-  //   }, [authState?.loggedIn]);
+  useEffect(() => {
+    if (authState?.data !== null) {
+      localStorage.setItem("token", authState?.data?.token);
+    }
+  }, [authState?.loggedIn]);
 
   return (
     <form onSubmit={handleSubmit}>
@@ -216,7 +216,7 @@ const AuthRegister = ({ title, subtitle, subtext }: registerType) => {
             </Typography>
           </Stack>
         </Stack>
-        {/* {errorState?.data && errorState?.data?.errors?.length > 0 && (
+        {errorState?.data && errorState?.data?.errors?.length > 0 && (
           <Typography
             variant="body1"
             color="error"
@@ -226,9 +226,9 @@ const AuthRegister = ({ title, subtitle, subtext }: registerType) => {
           >
             {errorState?.data?.errors[0]?.reason}
           </Typography>
-        )} */}
+        )}
         <Box>
-          {authState?.loading ? (
+          {authState?.data && authState?.loading ? (
             <Button
               color="inherit"
               variant="contained"
