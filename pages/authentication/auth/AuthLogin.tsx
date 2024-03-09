@@ -1,4 +1,4 @@
-import React, { useState,useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Box,
   Typography,
@@ -9,13 +9,14 @@ import {
   Checkbox,
   MenuItem,
   Select,
-  Switch,CircularProgress
+  Switch,
+  CircularProgress,
 } from "@mui/material";
 import Link from "next/link";
 import { useSelector, useDispatch } from "react-redux";
 import { RootState, AppDispatch } from "../../../store";
 import { login } from "../../../actions/auth";
-import { useRouter } from 'next/router';
+import { useRouter } from "next/router";
 import CustomTextField from "../../../src/components/forms/theme-elements/CustomTextField";
 
 interface loginType {
@@ -26,7 +27,7 @@ interface loginType {
 
 const AuthLogin = ({ title, subtitle, subtext }: loginType) => {
   const router = useRouter();
-  const state = useSelector((state: RootState) => state);
+  const state = useSelector((state: RootState) => state?.auth);
   const dispatch: AppDispatch = useDispatch();
 
   const [email, setEmail] = useState("");
@@ -37,9 +38,7 @@ const AuthLogin = ({ title, subtitle, subtext }: loginType) => {
   const [phoneError, setPhoneError] = useState(false);
   const [loggedInStatus, setloggedInStatus] = useState(false);
 
-  const handleInputChange = (
-    event: any
-  ) => {
+  const handleInputChange = (event: any) => {
     const { name, value } = event.target;
     if (name === "phone") {
       // Check if value is number and not greater than 10 digits
@@ -82,166 +81,176 @@ const AuthLogin = ({ title, subtitle, subtext }: loginType) => {
         })
       );
     }
+    console.log(state);
   };
 
-    useEffect(() => {
-    if (state.auth.loggedIn) {
-       router.push('/');
+  useEffect(() => {
+    if (state?.loggedIn) {
+      localStorage.setItem("token", state?.data?.token);
+      router.push("/");
     }
-  }, [state.auth.loggedIn]);
+  }, [state?.loggedIn]);
 
   // Display success or error popup based on state
-  if (state.auth.loggedIn) {
-    setTimeout(() => {
-      setloggedInStatus(true);
-    }, 500); // Delay the popup to show after a short time (for better user experience)
-  } else if (state.auth?.data?.errors?.length > 0) {
+  if (state?.data?.errors.length > 0) {
     setTimeout(() => {
       setloggedInStatus(true);
     }, 500);
   }
 
   return (
-    <form onSubmit={handleSubmit}>
-      <>
-        {title ? (
-          <Typography fontWeight="700" variant="h2" mb={1}>
-            {title}
-          </Typography>
-        ) : null}
-
-        {subtext}
-
-        <Stack spacing={2}>
-          <Box>
-            <Typography
-              variant="subtitle1"
-              fontWeight={600}
-              component="label"
-              htmlFor="email"
-              mb="5px"
-            >
-              {useEmail ? "Email" : "Phone"}
+    !state?.loading && (
+      <form onSubmit={handleSubmit}>
+        <>
+          {title ? (
+            <Typography fontWeight="700" variant="h2" mb={1}>
+              {title}
             </Typography>
-            {useEmail ? (
+          ) : null}
+
+          {subtext}
+
+          <Stack spacing={2}>
+            <Box>
+              <Typography
+                variant="subtitle1"
+                fontWeight={600}
+                component="label"
+                htmlFor="email"
+                mb="5px"
+              >
+                {useEmail ? "Email" : "Phone"}
+              </Typography>
+              {useEmail ? (
+                <CustomTextField
+                  type="email"
+                  name="email"
+                  variant="outlined"
+                  fullWidth
+                  value={email}
+                  onChange={handleInputChange}
+                />
+              ) : (
+                <CustomTextField
+                  type="tel" // Change to 'tel' type
+                  name="phone"
+                  variant="outlined"
+                  fullWidth
+                  value={phone} // Use 'phone' state for value
+                  onChange={handleInputChange}
+                  error={phoneError} // Use 'phoneError' for error state
+                  helperText={phoneError ? "Invalid phone number" : ""} // Display phone error message when 'phoneError' is true
+                />
+              )}
+            </Box>
+            <Box>
+              <Typography
+                variant="subtitle1"
+                fontWeight={600}
+                component="label"
+                htmlFor="password"
+                mb="5px"
+              >
+                Password
+              </Typography>
               <CustomTextField
-                type="email"
-                name="email"
+                type="password"
+                name="password"
                 variant="outlined"
                 fullWidth
-                value={email}
+                value={password}
                 onChange={handleInputChange}
               />
-            ) : (
-              <CustomTextField
-                type="tel" // Change to 'tel' type
-                name="phone"
+            </Box>
+            <Box>
+              <Typography
+                variant="subtitle1"
+                fontWeight={600}
+                component="label"
+                htmlFor="permission"
+                mb="5px"
+              >
+                Permission
+              </Typography>
+              <Select
+                value={permission}
+                name="permission"
+                onChange={handleInputChange}
                 variant="outlined"
                 fullWidth
-                value={phone} // Use 'phone' state for value
-                onChange={handleInputChange}
-                error={phoneError} // Use 'phoneError' for error state
-                helperText={phoneError ? "Invalid phone number" : ""} // Display phone error message when 'phoneError' is true
-              />
-            )}
-          </Box>
-          <Box>
-            <Typography
-              variant="subtitle1"
-              fontWeight={600}
-              component="label"
-              htmlFor="password"
-              mb="5px"
+              >
+                <MenuItem value="">Select Permission</MenuItem>
+                <MenuItem value="ADMIN">Admin</MenuItem>
+                <MenuItem value="PATIENT">Patient</MenuItem>
+                <MenuItem value="DOCTOR">Doctor</MenuItem>
+              </Select>
+            </Box>
+            <Stack
+              justifyContent="space-between"
+              direction="row"
+              alignItems="center"
+              my={2}
             >
-              Password
-            </Typography>
-            <CustomTextField
-              type="password"
-              name="password"
-              variant="outlined"
-              fullWidth
-              value={password}
-              onChange={handleInputChange}
-            />
-          </Box>
-          <Box>
-            <Typography
-              variant="subtitle1"
-              fontWeight={600}
-              component="label"
-              htmlFor="permission"
-              mb="5px"
-            >
-              Permission
-            </Typography>
-            <Select
-              value={permission}
-              name="permission"
-              onChange={handleInputChange}
-              variant="outlined"
-              fullWidth
-            >
-              <MenuItem value="">Select Permission</MenuItem>
-              <MenuItem value="ADMIN">Admin</MenuItem>
-              <MenuItem value="PATIENT">Patient</MenuItem>
-              <MenuItem value="DOCTOR">Doctor</MenuItem>
-            </Select>
-          </Box>
-          <Stack
-            justifyContent="space-between"
-            direction="row"
-            alignItems="center"
-            my={2}
-          >
-            <FormGroup>
-              <FormControlLabel
-                control={
-                  <Switch
-                    checked={useEmail}
-                    onChange={handleToggleChange}
-                    name="loginType"
-                    color="primary"
-                  />
-                }
-                label="Use Email"
-              />
-              <FormControlLabel
-                control={<Checkbox defaultChecked />}
-                label="Remember this Device"
-              />
-            </FormGroup>
-            <Typography
-              component={Link}
-              href="/"
-              fontWeight="500"
-              sx={{
-                textDecoration: "none",
-                color: "primary.main",
-              }}
-            >
-              Forgot Password?
-            </Typography>
+              <FormGroup>
+                <FormControlLabel
+                  control={
+                    <Switch
+                      checked={useEmail}
+                      onChange={handleToggleChange}
+                      name="loginType"
+                      color="primary"
+                    />
+                  }
+                  label="Use Email"
+                />
+                <FormControlLabel
+                  control={<Checkbox defaultChecked />}
+                  label="Remember this Device"
+                />
+              </FormGroup>
+              <Typography
+                component={Link}
+                href="/"
+                fontWeight="500"
+                sx={{
+                  textDecoration: "none",
+                  color: "primary.main",
+                }}
+              >
+                Forgot Password?
+              </Typography>
+            </Stack>
           </Stack>
-        </Stack>
-      {loggedInStatus && state.auth?.data?.errors?.length > 0 && (
-        <Typography variant="body1" color="error" alignContent={"center"} mt={2} mb={2}>
-          {state.auth.data?.errors[0]?.reason}
-        </Typography>
-      )}
-        <Box>
-          <Button
-            color="primary"
-            variant="contained"
-            size="large"
-            fullWidth
-            type="submit"
-          >
-            {state.auth.loading ? <CircularProgress size={24} /> : "Sign In"}
-          </Button>
-        </Box>
-        {subtitle}
-      </>
-    </form>
+          {state?.data && state?.data?.errors?.length > 0 && (
+            <Typography
+              variant="body1"
+              color="error"
+              alignContent={"center"}
+              mt={2}
+              mb={2}
+            >
+              {state?.data?.errors[0]?.reason}
+            </Typography>
+          )}
+          <Box>
+            <Button
+              color="primary"
+              variant="contained"
+              size="large"
+              fullWidth
+              type="submit"
+            >
+              {state && state?.loading ? (
+                <CircularProgress size={24} />
+              ) : (
+                "Sign In"
+              )}
+            </Button>
+          </Box>
+          {subtitle}
+        </>
+      </form>
+    )
   );
 };
 

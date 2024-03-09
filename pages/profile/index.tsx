@@ -1,6 +1,15 @@
 import React, { useEffect, useState } from "react";
 import { styled } from "@mui/material/styles";
-import { Avatar, Typography, Card, Paper, List, ListItem, ListItemText, ListItemIcon } from "@mui/material";
+import {
+  Avatar,
+  Typography,
+  Card,
+  Paper,
+  List,
+  ListItem,
+  ListItemText,
+  ListItemIcon,
+} from "@mui/material";
 import { IconShield, IconShieldCheck } from "@tabler/icons-react";
 import PageContainer from "../../src/components/container/PageContainer";
 import DashboardCard from "../../src/components/shared/DashboardCard";
@@ -8,10 +17,10 @@ import FullLayout from "../../src/layouts/full/FullLayout";
 import { useSelector } from "react-redux";
 import { RootState } from "../../store";
 import { getDateFromString } from "../../utils/auth";
-import EmailIcon from '@mui/icons-material/Email';
-import PhoneIcon from '@mui/icons-material/Phone';
-import DateRangeIcon from '@mui/icons-material/DateRange';
-import LockIcon from '@mui/icons-material/Lock';
+import EmailIcon from "@mui/icons-material/Email";
+import PhoneIcon from "@mui/icons-material/Phone";
+import DateRangeIcon from "@mui/icons-material/DateRange";
+import LockIcon from "@mui/icons-material/Lock";
 
 const ProfileAvatar = styled(Avatar)(({ theme }) => ({
   width: theme.spacing(20),
@@ -46,90 +55,107 @@ const MyProfilePage = () => {
     setState(rootState);
   });
 
-  console.log(state)
+  console.log(state);
 
   return (
     <PageContainer title="My Profile" description="this is profile page">
-      <DashboardCard title="My Profile">
-        <VerificationStatus>
-          <StatusIcon verified={state?.status}>
+      {state && (
+        <>
+          <DashboardCard title="My Profile">
+            <VerificationStatus>
+              <StatusIcon verified={state?.status}>
+                <Card
+                  sx={{
+                    display: "flex",
+                    alignItems: "center",
+                    width: state?.status ? "7.5rem" : "9.5rem",
+                    backgroundColor:
+                      state?.status === "VERIFIED" ? "green" : "#e65100",
+                    padding: "5px 5px 5px 10px",
+                  }}
+                  elevation={0}
+                >
+                  {state?.status === "VERIFIED" ? (
+                    <IconShieldCheck color="white" />
+                  ) : (
+                    <IconShield color="white" />
+                  )}
+                  <Typography
+                    variant="h6"
+                    style={{ color: "white", padding: "5px 10px 5px 5px" }}
+                  >
+                    {state?.status === "VERIFIED" ? "VERIFIED" : " UNVERIFIED"}
+                  </Typography>
+                </Card>
+              </StatusIcon>
+            </VerificationStatus>
             <Card
-              sx={{
-                display: "flex",
-                alignItems: "center",
-                width: state?.status ? "7.5rem" : "9.5rem",
-                backgroundColor: state?.status ? "green" : "#b71c1c",
-                padding: "5px 5px 5px 10px",
-              }}
               elevation={0}
+              sx={{
+                height: "15rem",
+                backgroundImage: `url(/images/profile/profile-banner.webp)`,
+                backgroundSize: "cover",
+                backgroundRepeat: "no-repeat",
+                backgroundPosition: "center",
+              }}
             >
-              {state?.status ? (
-                <IconShieldCheck color="white" />
-              ) : (
-                <IconShield color="white" />
-              )}
-              <Typography
-                variant="h6"
-                style={{ color: "white", padding: "5px 10px 5px 5px" }}
-              >
-                {state?.status ? " Verified" : " Not Verified"}
-              </Typography>
+              <ProfileAvatar src="/images/profile/user-1.jpg" />
             </Card>
-          </StatusIcon>
-        </VerificationStatus>
-        <Card
-          elevation={0}
-          sx={{
-            height: "15rem",
-            backgroundImage: `url(/images/profile/profile-banner.webp)`,
-            backgroundSize: "cover",
-            backgroundRepeat: "no-repeat",
-            backgroundPosition: "center",
-          }}
-        >
-          <ProfileAvatar src="/images/profile/user-1.jpg" />
-        </Card>
-      </DashboardCard>
-      <DashboardCard>
- <List>
-      <ListItem>
-        <ListItemIcon>
-          <EmailIcon />
-        </ListItemIcon>
-        <ListItemText>
-            Email
-          <Typography variant="body1" color="#1976d2">{`${state?.email}`}</Typography>
-        </ListItemText>
-      </ListItem>
-      <ListItem>
-        <ListItemIcon>
-          <DateRangeIcon />
-        </ListItemIcon>
-        <ListItemText>
-            Joined on
-          <Typography variant="body1" color="#1976d2">{`${getDateFromString(state?.created_at)}`}</Typography>
-        </ListItemText>
-      </ListItem>
-      <ListItem>
-        <ListItemIcon>
-          <PhoneIcon />
-        </ListItemIcon>
-        <ListItemText>
-            Phone Number
-          <Typography variant="body1" color="#1976d2">{`${state?.phone}`}</Typography>
-        </ListItemText>
-      </ListItem>
-      <ListItem>
-        <ListItemIcon>
-          <LockIcon />
-        </ListItemIcon>
-        <ListItemText>
-            Account Permission
-          <Typography variant="body1" color="#1976d2">{`${state?.permission}`}</Typography>
-        </ListItemText>
-      </ListItem>
-    </List>
-      </DashboardCard>
+          </DashboardCard>
+          <DashboardCard>
+            <List>
+              <ListItem>
+                <ListItemIcon>
+                  <EmailIcon />
+                </ListItemIcon>
+                <ListItemText>
+                  Email
+                  <Typography
+                    variant="body1"
+                    color="#1976d2"
+                  >{`${state?.email}`}</Typography>
+                </ListItemText>
+              </ListItem>
+              <ListItem>
+                <ListItemIcon>
+                  <DateRangeIcon />
+                </ListItemIcon>
+                <ListItemText>
+                  Joined on
+                  <Typography
+                    variant="body1"
+                    color="#1976d2"
+                  >{`${getDateFromString(state?.created_at)}`}</Typography>
+                </ListItemText>
+              </ListItem>
+              <ListItem>
+                <ListItemIcon>
+                  <PhoneIcon />
+                </ListItemIcon>
+                <ListItemText>
+                  Phone Number
+                  <Typography
+                    variant="body1"
+                    color="#1976d2"
+                  >{`${state?.phone}`}</Typography>
+                </ListItemText>
+              </ListItem>
+              <ListItem>
+                <ListItemIcon>
+                  <LockIcon />
+                </ListItemIcon>
+                <ListItemText>
+                  Account Permission
+                  <Typography
+                    variant="body1"
+                    color="#1976d2"
+                  >{`${state?.permission}`}</Typography>
+                </ListItemText>
+              </ListItem>
+            </List>
+          </DashboardCard>
+        </>
+      )}
     </PageContainer>
   );
 };

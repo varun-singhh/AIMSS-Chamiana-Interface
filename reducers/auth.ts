@@ -1,12 +1,8 @@
 import {
   USER_LOGIN,
   REGISTER_USER,
-  USER_LOGIN_FAILED,
-  REGISTER_USER_FAILED,
   LOADING,
   REQUEST_OTP,
-  REQUEST_OTP_FAILED,
-  LOGOUT
 } from "../actions/types";
 
 interface AuthState {
@@ -26,11 +22,8 @@ const initialState: AuthState = {
 type AuthAction =
   | { type: typeof LOADING }
   | { type: typeof REGISTER_USER; payload: any }
-  | { type: typeof REGISTER_USER_FAILED; payload: any }
   | { type: typeof USER_LOGIN; payload: any }
-  | { type: typeof REQUEST_OTP; payload: any }
-  | { type: typeof REQUEST_OTP_FAILED; payload: any }
-  | { type: typeof USER_LOGIN_FAILED; payload: any };
+  | { type: typeof REQUEST_OTP; payload: any };
 
 export default function formReducer(
   state: AuthState = initialState,
@@ -44,7 +37,6 @@ export default function formReducer(
       };
     case REGISTER_USER:
       return {
-        ...state,
         loading: false,
         loggedIn: false,
         data: action.payload,
@@ -52,7 +44,6 @@ export default function formReducer(
       };
     case REQUEST_OTP:
       return {
-        ...state,
         loading: false,
         loggedIn: false,
         data: action.payload,
@@ -60,43 +51,11 @@ export default function formReducer(
       };
     case USER_LOGIN:
       return {
-        ...state,
         loggedIn: true,
         loading: false,
         data: action.payload,
         message: "user logged in successfully",
       };
-    case REGISTER_USER_FAILED:
-      return {
-        ...state,
-        loading: false,
-        loggedIn: false,
-        data: action.payload,
-        message: "failed to register user",
-      };
-    case REQUEST_OTP_FAILED:
-      return {
-        ...state,
-        loading: false,
-        loggedIn: false,
-        data: action.payload,
-        message: "failed to send otp",
-      };
-    case USER_LOGIN_FAILED:
-      return {
-        ...state,
-        loading: false,
-        loggedIn: false,
-        data: action.payload,
-        message: "failed to login",
-      };
-    case LOGOUT: 
-      return {
-        loading: false,
-        data: null,
-        loggedIn:false,
-        message: "logged out",
-      }
     default:
       return state;
   }
