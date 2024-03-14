@@ -30,13 +30,9 @@ export default function formReducer(
   action: AuthAction
 ): AuthState {
   switch (action.type) {
-    case LOADING:
-      return {
-        ...state,
-        loading: true,
-      };
     case REGISTER_USER:
       return {
+        ...state,
         loading: false,
         loggedIn: false,
         data: action.payload,
@@ -44,6 +40,7 @@ export default function formReducer(
       };
     case REQUEST_OTP:
       return {
+        ...state,
         loading: false,
         loggedIn: false,
         data: action.payload,
@@ -51,6 +48,7 @@ export default function formReducer(
       };
     case USER_LOGIN:
       return {
+        ...state,
         loggedIn: true,
         loading: false,
         data: action.payload,

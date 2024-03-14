@@ -9,6 +9,7 @@ import {
   REQUEST_OTP,
   REQUEST_OTP_FAILED,
   LOGOUT,
+  CLEAR_STATE,
 } from "./types";
 import { Dispatch } from "redux";
 import { deleteState } from "../localstorage";
@@ -43,6 +44,7 @@ export const register = (data: any) => async (dispatch: Dispatch) => {
         "Content-Type": "application/json",
       },
     });
+    dispatch({ type: CLEAR_STATE });
     dispatch({
       type: REGISTER_USER,
       payload: res.data?.data,
@@ -57,6 +59,7 @@ export const register = (data: any) => async (dispatch: Dispatch) => {
 
 export const verify =
   (data: any, email: string) => async (dispatch: Dispatch) => {
+    console.log(email, data);
     try {
       dispatch({ type: LOADING });
 
@@ -80,6 +83,23 @@ export const verify =
       });
     }
   };
+
+export const resendOtp = (email: string) => async (dispatch: Dispatch) => {
+  try {
+    dispatch({ type: LOADING });
+
+    const res = await axios.get(authBaseURL + "code?email=" + email);
+    dispatch({
+      type: REQUEST_OTP,
+      payload: res.data?.data,
+    });
+  } catch (error: any) {
+    dispatch({
+      type: REQUEST_OTP_FAILED,
+      payload: error.response?.data,
+    });
+  }
+};
 
 export const logout = () => async (dispatch: Dispatch) => {
   dispatch({ type: LOGOUT });

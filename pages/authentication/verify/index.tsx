@@ -16,7 +16,7 @@ import Link from "next/link";
 import PageContainer from "../../../src/components/container/PageContainer";
 import Logo from "../../../src/layouts/full/shared/logo/Logo";
 import BlankLayout from "../../../src/layouts/blank/BlankLayout";
-import AuthVerify from "../auth/AuthVerify";
+import OtpVerification from "../auth/AuthVerify";
 
 const Verify = () => {
   const theme = useTheme();
@@ -32,6 +32,7 @@ const Verify = () => {
   const handleNotAgree = () => {
     setOpen(true);
     setAgreed(false);
+    localStorage.removeItem("state");
     window.location.href = "/authentication/register";
   };
 
@@ -43,7 +44,7 @@ const Verify = () => {
             position: "absolute",
             top: "50%",
             left: "50%",
-            // transform: "translate(-50%, -50%)",
+            transform: "translate(-50%, -50%)",
             maxWidth: "90vw", // Limit the maximum width of the modal to 90% of the viewport width
             backgroundColor: "white",
             padding: "20px",
@@ -115,6 +116,7 @@ const Verify = () => {
       <Box
         sx={{
           position: "relative",
+          overflowX: "hidden",
           "&:before": {
             content: '""',
             backgroundImage: `url(/images/profile/cardio-bg.jpeg)`,
@@ -125,7 +127,6 @@ const Verify = () => {
             backgroundSize: "cover",
             backgroundRepeat: "no-repeat",
             backgroundPosition: "center",
-            // opacity: "0.5",
           },
         }}
       >
@@ -158,7 +159,7 @@ const Verify = () => {
               <Box display="flex" alignItems="center" justifyContent="center">
                 <Logo />
               </Box>
-              <AuthVerify />
+              <OtpVerification />
             </Card>
           </Grid>
         </Grid>

@@ -23,6 +23,7 @@ const Register2 = () => {
       <Box
         sx={{
           position: "relative",
+          overflowX: "hidden",
           "&:before": {
             content: '""',
             backgroundImage: `url(/images/profile/cardio-bg.jpeg)`,

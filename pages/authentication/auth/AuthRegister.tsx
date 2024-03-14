@@ -28,19 +28,40 @@ interface registerType {
 const AuthRegister = ({ title, subtitle, subtext }: registerType) => {
   const router = useRouter();
   const dispatch: AppDispatch = useDispatch();
-  const authState = useSelector((state: RootState) => state?.auth);
-  const errorState = useSelector((state: RootState) => state?.error);
-
+  const auth = useSelector((state: RootState) => state?.auth);
+  const err = useSelector((state: RootState) => state?.error);
+  const [errorState, setErrorState] = useState({ data: {} });
+  const [authState, setAuthState] = useState({ data: {} });
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
   const [password, setPassword] = useState("");
   const [permission, setPermission] = useState("");
   const [useEmail, setUseEmail] = useState(true);
   const [phoneError, setPhoneError] = useState(false);
+  const [registerEventTrigged, SetRegisterEventTrigger] = useState(false);
+  const [loading, setLoading] = useState(false);
 
-  console.log(authState, errorState);
+  useEffect(() => {
+    if (auth?.data !== null) {
+      localStorage.setItem("user", JSON.stringify(auth?.data?.user));
+    }
+    setAuthState(auth);
+    setErrorState(err);
+  }, [registerEventTrigged]);
 
-  const handleInputChange = (event: any) => {
+  useEffect(() => {
+    if (auth?.data !== null) {
+      router.push("/authentication/verify");
+    }
+
+    if (auth?.loggedIn) {
+      router.push("/");
+    }
+
+    setLoading(false);
+  }, [auth?.data, err?.data]);
+
+  const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = event.target;
     if (name === "phone") {
       // Check if value is number and not greater than 10 digits
@@ -63,195 +84,176 @@ const AuthRegister = ({ title, subtitle, subtext }: registerType) => {
     setUseEmail(!useEmail);
   };
 
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+    setLoading(true);
     event.preventDefault();
-    if (useEmail) {
-      dispatch(
-        register({
-          email,
-          password,
-          permission,
-        })
-      );
-    } else {
-      dispatch(
-        register({
-          phone,
-          password,
-          permission,
-        })
-      );
-    }
-
-    if (errorState?.data?.errors.length === 0) {
-      router.push("/authentication/verify");
-    }
+    const data = useEmail
+      ? { email, password, permission }
+      : { phone, password, permission };
+    await dispatch(register(data));
+    SetRegisterEventTrigger(!registerEventTrigged);
   };
-
-  useEffect(() => {
-    if (authState?.data !== null) {
-      localStorage.setItem("token", authState?.data?.token);
-    }
-  }, [authState?.loggedIn]);
 
   return (
     <form onSubmit={handleSubmit}>
-      <>
-        {title ? (
-          <Typography fontWeight="700" variant="h2" mb={1}>
-            {title}
-          </Typography>
-        ) : null}
-
-        {subtext}
-
-        <Stack spacing={2}>
-          <Box>
-            <Typography
-              variant="subtitle1"
-              fontWeight={600}
-              component="label"
-              htmlFor="email"
-              mb="5px"
-            >
-              {useEmail ? "Email" : "Phone"}
+      {authState && (
+        <>
+          {title && (
+            <Typography fontWeight="700" variant="h2" mb={1}>
+              {title}
             </Typography>
-            {useEmail ? (
+          )}
+
+          {subtext}
+
+          <Stack spacing={2}>
+            <Box>
+              <Typography
+                variant="subtitle1"
+                fontWeight={600}
+                component="label"
+                htmlFor="email"
+                mb="5px"
+              >
+                {useEmail ? "Email" : "Phone"}
+              </Typography>
+              {useEmail ? (
+                <CustomTextField
+                  type="email"
+                  name="email"
+                  variant="outlined"
+                  fullWidth
+                  value={email}
+                  onChange={handleInputChange}
+                />
+              ) : (
+                <CustomTextField
+                  type="tel" // Change to 'tel' type
+                  name="phone"
+                  variant="outlined"
+                  fullWidth
+                  value={phone} // Use 'phone' state for value
+                  onChange={handleInputChange}
+                  error={phoneError} // Use 'phoneError' for error state
+                  helperText={phoneError ? "Invalid phone number" : ""} // Display phone error message when 'phoneError' is true
+                />
+              )}
+            </Box>
+            <Box>
+              <Typography
+                variant="subtitle1"
+                fontWeight={600}
+                component="label"
+                htmlFor="password"
+                mb="5px"
+              >
+                Password
+              </Typography>
               <CustomTextField
-                type="email"
-                name="email"
+                type="password"
+                name="password"
                 variant="outlined"
                 fullWidth
-                value={email}
+                value={password}
                 onChange={handleInputChange}
               />
+            </Box>
+            <Box>
+              <Typography
+                variant="subtitle1"
+                fontWeight={600}
+                component="label"
+                htmlFor="permission"
+                mb="5px"
+              >
+                Permission
+              </Typography>
+              <Select
+                value={permission}
+                name="permission"
+                onChange={handleInputChange}
+                variant="outlined"
+                fullWidth
+              >
+                <MenuItem value="">Select Permission</MenuItem>
+                <MenuItem value="ADMIN">Admin</MenuItem>
+                <MenuItem value="PATIENT">Patient</MenuItem>
+                <MenuItem value="DOCTOR">Doctor</MenuItem>
+              </Select>
+            </Box>
+            <Stack
+              justifyContent="space-between"
+              direction="row"
+              alignItems="center"
+              my={2}
+            >
+              <FormGroup>
+                <FormControlLabel
+                  control={
+                    <Switch
+                      checked={useEmail}
+                      onChange={handleToggleChange}
+                      name="registerType"
+                      color="primary"
+                    />
+                  }
+                  label="Use Email"
+                />
+                <FormControlLabel
+                  control={<Checkbox defaultChecked />}
+                  label="Remember this Device"
+                />
+              </FormGroup>
+              <Typography
+                component={Link}
+                href="/"
+                fontWeight="500"
+                sx={{
+                  textDecoration: "none",
+                  color: "primary.main",
+                }}
+              >
+                Forgot Password?
+              </Typography>
+            </Stack>
+          </Stack>
+          {errorState?.data?.errors?.length > 0 && (
+            <Typography
+              variant="body1"
+              color="error"
+              alignContent="center"
+              mt={2}
+              mb={2}
+            >
+              {errorState?.data?.errors[0]?.reason || ""}
+            </Typography>
+          )}
+          <Box>
+            {loading ? (
+              <Button
+                color="inherit"
+                variant="contained"
+                size="large"
+                fullWidth
+                type="submit"
+              >
+                <CircularProgress size={24} />
+              </Button>
             ) : (
-              <CustomTextField
-                type="tel" // Change to 'tel' type
-                name="phone"
-                variant="outlined"
+              <Button
+                color="primary"
+                variant="contained"
+                size="large"
                 fullWidth
-                value={phone} // Use 'phone' state for value
-                onChange={handleInputChange}
-                error={phoneError} // Use 'phoneError' for error state
-                helperText={phoneError ? "Invalid phone number" : ""} // Display phone error message when 'phoneError' is true
-              />
+                type="submit"
+              >
+                Create Account
+              </Button>
             )}
           </Box>
-          <Box>
-            <Typography
-              variant="subtitle1"
-              fontWeight={600}
-              component="label"
-              htmlFor="password"
-              mb="5px"
-            >
-              Password
-            </Typography>
-            <CustomTextField
-              type="password"
-              name="password"
-              variant="outlined"
-              fullWidth
-              value={password}
-              onChange={handleInputChange}
-            />
-          </Box>
-          <Box>
-            <Typography
-              variant="subtitle1"
-              fontWeight={600}
-              component="label"
-              htmlFor="permission"
-              mb="5px"
-            >
-              Permission
-            </Typography>
-            <Select
-              value={permission}
-              name="permission"
-              onChange={handleInputChange}
-              variant="outlined"
-              fullWidth
-            >
-              <MenuItem value="">Select Permission</MenuItem>
-              <MenuItem value="ADMIN">Admin</MenuItem>
-              <MenuItem value="PATIENT">Patient</MenuItem>
-              <MenuItem value="DOCTOR">Doctor</MenuItem>
-            </Select>
-          </Box>
-          <Stack
-            justifyContent="space-between"
-            direction="row"
-            alignItems="center"
-            my={2}
-          >
-            <FormGroup>
-              <FormControlLabel
-                control={
-                  <Switch
-                    checked={useEmail}
-                    onChange={handleToggleChange}
-                    name="registerType"
-                    color="primary"
-                  />
-                }
-                label="Use Email"
-              />
-              <FormControlLabel
-                control={<Checkbox defaultChecked />}
-                label="Remember this Device"
-              />
-            </FormGroup>
-            <Typography
-              component={Link}
-              href="/"
-              fontWeight="500"
-              sx={{
-                textDecoration: "none",
-                color: "primary.main",
-              }}
-            >
-              Forgot Password?
-            </Typography>
-          </Stack>
-        </Stack>
-        {errorState?.data && errorState?.data?.errors?.length > 0 && (
-          <Typography
-            variant="body1"
-            color="error"
-            alignContent={"center"}
-            mt={2}
-            mb={2}
-          >
-            {errorState?.data?.errors[0]?.reason}
-          </Typography>
-        )}
-        <Box>
-          {authState?.data && authState?.loading ? (
-            <Button
-              color="inherit"
-              variant="contained"
-              size="large"
-              fullWidth
-              type="submit"
-            >
-              <CircularProgress size={24} />
-            </Button>
-          ) : (
-            <Button
-              color="primary"
-              variant="contained"
-              size="large"
-              fullWidth
-              type="submit"
-            >
-              Create Account
-            </Button>
-          )}
-        </Box>
-        {subtitle}
-      </>
+          {subtitle}
+        </>
+      )}
     </form>
   );
 };

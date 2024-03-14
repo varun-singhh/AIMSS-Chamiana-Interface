@@ -36,7 +36,7 @@ const AuthLogin = ({ title, subtitle, subtext }: loginType) => {
   const [permission, setPermission] = useState("");
   const [useEmail, setUseEmail] = useState(true);
   const [phoneError, setPhoneError] = useState(false);
-  const [loggedInStatus, setloggedInStatus] = useState(false);
+  const [loggedInStatus, setLoggedInStatus] = useState(false);
 
   const handleInputChange = (event: any) => {
     const { name, value } = event.target;
@@ -62,7 +62,7 @@ const AuthLogin = ({ title, subtitle, subtext }: loginType) => {
   };
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-    setloggedInStatus(false);
+    setLoggedInStatus(false);
     event.preventDefault();
     if (useEmail) {
       dispatch(
@@ -91,22 +91,23 @@ const AuthLogin = ({ title, subtitle, subtext }: loginType) => {
     }
   }, [state?.loggedIn]);
 
-  // Display success or error popup based on state
-  if (state?.data?.errors.length > 0) {
-    setTimeout(() => {
-      setloggedInStatus(true);
-    }, 500);
-  }
+  useEffect(() => {
+    if (state?.data?.errors?.length > 0) {
+      setTimeout(() => {
+        setLoggedInStatus(true);
+      }, 500);
+    }
+  }, [state?.data?.errors]);
 
   return (
-    !state?.loading && (
-      <form onSubmit={handleSubmit}>
+    <form onSubmit={handleSubmit}>
+      {state && (
         <>
-          {title ? (
+          {title && (
             <Typography fontWeight="700" variant="h2" mb={1}>
               {title}
             </Typography>
-          ) : null}
+          )}
 
           {subtext}
 
@@ -221,7 +222,7 @@ const AuthLogin = ({ title, subtitle, subtext }: loginType) => {
               </Typography>
             </Stack>
           </Stack>
-          {state?.data && state?.data?.errors?.length > 0 && (
+          {loggedInStatus && (
             <Typography
               variant="body1"
               color="error"
@@ -240,17 +241,13 @@ const AuthLogin = ({ title, subtitle, subtext }: loginType) => {
               fullWidth
               type="submit"
             >
-              {state && state?.loading ? (
-                <CircularProgress size={24} />
-              ) : (
-                "Sign In"
-              )}
+              {state?.loading ? <CircularProgress size={24} /> : "Sign In"}
             </Button>
           </Box>
           {subtitle}
         </>
-      </form>
-    )
+      )}
+    </form>
   );
 };
 

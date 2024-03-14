@@ -1,29 +1,15 @@
 import { Reducer } from "redux";
-import {
-  ERROR_UPLOADING_FORM,
-  ERROR_FETCHING_FORM,
-  ERROR_CREATING_FORM,
-  LOADING,
-  ERROR_DELETING_FORM,
-  REGISTER_USER_FAILED,
-  REQUEST_OTP_FAILED,
-  USER_LOGIN_FAILED,
-  CLEAR_STATE,
-} from "../actions/types";
+import { LOADING } from "../actions/types";
 
-interface ErrorState {
+interface LoadState {
   loading: boolean;
-  data: any | null;
-  message: string | null;
 }
 
-const initialState: ErrorState = {
+const initialState: LoadState = {
   loading: false,
-  data: null,
-  message: null,
 };
 
-const errorReducer: Reducer<ErrorState> = (state = initialState, action) => {
+const loadingReducer: Reducer<LoadState> = (state = initialState, action) => {
   switch (action.type) {
     case LOADING:
       return {
@@ -94,4 +80,4 @@ const errorReducer: Reducer<ErrorState> = (state = initialState, action) => {
   }
 };
 
-export default errorReducer;
+export default loadingReducer;

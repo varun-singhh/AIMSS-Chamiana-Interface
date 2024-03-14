@@ -28,11 +28,6 @@ export default function formReducer(
   action: FormAction
 ): FormState {
   switch (action.type) {
-    case LOADING:
-      return {
-        ...state,
-        loading: true,
-      };
     case FETCHING_FORM_FROM_SERVER:
       return {
         ...state,

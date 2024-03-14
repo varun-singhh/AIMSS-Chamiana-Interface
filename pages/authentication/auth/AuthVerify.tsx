@@ -1,21 +1,28 @@
 import React, { useState, useEffect } from "react";
-import { TextField, Button, Stack, Typography } from "@mui/material";
-import { verify } from "../../../actions/auth";
-import { useRouter } from "next/router";
+import {
+  TextField,
+  Button,
+  Stack,
+  Typography,
+  Modal,
+  CircularProgress,
+} from "@mui/material";
+import { resendOtp, verify } from "../../../actions/auth";
 import { RootState, AppDispatch } from "../../../store";
 import { useSelector, useDispatch } from "react-redux";
+import { useRouter } from "next/router";
+import Link from "next/link";
 
-const OtpVerification: React.FC = () => {
+export const OtpVerification = () => {
   const router = useRouter();
-  const state = useSelector((state: RootState) => state);
   const dispatch: AppDispatch = useDispatch();
-
+  const auth = useSelector((state: RootState) => state?.auth);
   const [otp, setOtp] = useState<string[]>(Array(8).fill(""));
   const [validOtp, setValidOtp] = useState<any>([]);
   const [seconds, setSeconds] = useState(120);
   const [isActive, setIsActive] = useState(false);
-
-  console.log(state);
+  const [open, setOpen] = useState(false);
+  const [agreed, setAgreed] = useState(false);
 
   useEffect(() => {
     let interval: NodeJS.Timeout;
@@ -42,8 +49,10 @@ const OtpVerification: React.FC = () => {
 
   useEffect(() => {
     const handleBeforeUnload = (event: BeforeUnloadEvent) => {
+      localStorage.removeItem("state");
+      localStorage.removeItem("user");
       if (isActive) {
-        event.preventDefault;
+        event.preventDefault();
         event.returnValue = "none"; // For Chrome
       }
     };
@@ -61,7 +70,13 @@ const OtpVerification: React.FC = () => {
   ) => {
     const { value } = e.target;
     if (value.length <= 1 && /^\d*$/.test(value)) {
-      setValidOtp((prevValidOtp: any) => [...prevValidOtp, value]);
+      setValidOtp((prevValidOtp: any) => {
+        const updatedValidOtp = [...prevValidOtp, value];
+        if (updatedValidOtp.length === 8) {
+          handleVerifyOtp(updatedValidOtp);
+        }
+        return updatedValidOtp;
+      });
       const newOtp = [...otp];
       newOtp[index] = value;
       setOtp(newOtp);
@@ -71,30 +86,35 @@ const OtpVerification: React.FC = () => {
         document.getElementById(`otp-${nextIndex}`)?.focus();
       }
     }
-
-    if (validOtp.length === 7) {
-      handleVerifyOtp();
-    }
   };
 
   const handleResendOtp = () => {
     setSeconds(120);
     setIsActive(true);
     setOtp(Array(8).fill(""));
+    dispatch(
+      resendOtp(JSON.parse(localStorage.getItem("user") ?? "{}")?.email)
+    );
   };
 
-  const handleVerifyOtp = () => {
-    const otpString = otp.join("");
+  const handleVerifyOtp = (otpVal: any) => {
+    const otpString = otpVal.join("");
     dispatch(
       verify(
         {
           code: otpString,
-          permission: "DOCTOR",
+          permission: auth?.data?.user?.permission,
         },
-        state?.auth?.data?.user?.email
+        JSON.parse(localStorage.getItem("user") ?? "{}")?.email
       )
     );
   };
+
+  useEffect(() => {
+    if (auth?.data === "account verified successfully") {
+      setOpen(true);
+    }
+  }, [auth?.data]);
 
   const renderOtpInputs = () => {
     return otp.map((digit, index) => (
@@ -126,18 +146,64 @@ const OtpVerification: React.FC = () => {
   };
 
   return (
-    <Stack
-      display={"flex"}
-      justifyContent={"center"}
-      alignItems={"center"}
-      mt={5}
-    >
-      <Typography mb={4}>ONE LAST STEP - VERIFY</Typography>
-      <div style={{ display: "flex" }}>{renderOtpInputs()}</div>
-      <Button onClick={handleResendOtp} disabled={isActive}>
-        Resend OTP {isActive && `(${formatTime(seconds)})`}
-      </Button>
-    </Stack>
+    <>
+      <Stack
+        display={"flex"}
+        justifyContent={"center"}
+        alignItems={"center"}
+        mt={5}
+      >
+        <Typography mb={4}>ONE LAST STEP - VERIFY</Typography>
+        {auth?.loading ? (
+          <CircularProgress size={34} />
+        ) : (
+          <div style={{ display: "flex" }}>{renderOtpInputs()}</div>
+        )}
+
+        <Button onClick={handleResendOtp} disabled={isActive}>
+          Resend OTP {isActive && `(${formatTime(seconds)})`}
+        </Button>
+      </Stack>
+      <Modal open={open}>
+        <div
+          style={{
+            position: "absolute",
+            top: "50%",
+            left: "50%",
+            transform: "translate(-50%, -50%)",
+            maxWidth: "90vw", // Limit the maximum width of the modal to 90% of the viewport width
+            backgroundColor: "white",
+            padding: "20px",
+            overflowY: "auto", // Add vertical scroll if content exceeds modal height
+            maxHeight: "90vh", // Limit the maximum height of the modal to 90% of the viewport height
+            textAlign: "left", // Align text to the left for better readability
+          }}
+        >
+          <Stack>
+            <Typography variant="h7" gutterBottom>
+              Account Created Successfully. Login to proceed
+            </Typography>
+            <Button
+              sx={{
+                marginY: "10px",
+              }}
+              color="primary"
+              disableElevation
+              component={Link}
+              href="/authentication/login"
+              variant="outlined"
+              aria-label="logout"
+              size="small"
+              onClick={() => {
+                localStorage.clear;
+              }}
+            >
+              Login
+            </Button>
+          </Stack>
+        </div>
+      </Modal>
+    </>
   );
 };
 
