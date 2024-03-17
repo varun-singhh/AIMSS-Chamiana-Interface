@@ -15,6 +15,8 @@ import { IconUser } from "@tabler/icons-react";
 import { useSelector, useDispatch } from "react-redux";
 import { RootState, AppDispatch } from "../../../../store";
 import { logout } from "../../../../actions/auth";
+import Cookies from "js-cookie";
+import { clearCookie } from "../../../../utils/auth";
 
 const Profile = (rootState: any) => {
   const state = useSelector((state: RootState) => state);
@@ -27,6 +29,8 @@ const Profile = (rootState: any) => {
   const handleClose2 = () => {
     setAnchorEl2(null);
   };
+
+  console.log(Cookies.get("token"));
 
   return (
     <Box>
@@ -101,6 +105,7 @@ const Profile = (rootState: any) => {
             color="primary"
             fullWidth
             onClick={() => {
+              clearCookie();
               dispatch(logout());
             }}
           >

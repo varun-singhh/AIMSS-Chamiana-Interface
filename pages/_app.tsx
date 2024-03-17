@@ -45,7 +45,7 @@ const MyApp = (props: MyAppProps) => {
   const router = useRouter();
 
   useEffect(() => {
-    if (Cookies.get("token") === null) {
+    if (Cookies.get("token") === undefined) {
       router.push("/authentication/login");
     }
   }, []);
