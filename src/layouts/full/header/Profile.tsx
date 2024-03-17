@@ -28,8 +28,6 @@ const Profile = (rootState: any) => {
     setAnchorEl2(null);
   };
 
-  console.log(rootState)
-
   return (
     <Box>
       <IconButton
@@ -72,16 +70,18 @@ const Profile = (rootState: any) => {
         }}
       >
         {rootState?.auth?.loggedIn ? (
-          <MenuItem onClick={()=>{
-            window.location.href = "/profile"
-          }}>
+          <MenuItem
+            onClick={() => {
+              window.location.href = "/profile";
+            }}
+          >
             <ListItemIcon>
               <IconUser width={20} />
             </ListItemIcon>
             <ListItemText>My Profile</ListItemText>
           </MenuItem>
         ) : (
-           <MenuItem></MenuItem>
+          <MenuItem></MenuItem>
         )}
         {/* <MenuItem>
           <ListItemIcon>
@@ -97,14 +97,11 @@ const Profile = (rootState: any) => {
         </MenuItem> */}
         <Box mt={1} py={1} px={2}>
           <Button
-            href="/authentication/login"
             variant="outlined"
             color="primary"
-            component={Link}
             fullWidth
-            onClick={()=>{
-              dispatch(logout())
-              window.location.href="/authentication/login"
+            onClick={() => {
+              dispatch(logout());
             }}
           >
             Logout

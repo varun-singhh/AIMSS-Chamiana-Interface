@@ -1,5 +1,5 @@
 import type { ReactElement } from "react";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Grid,
   Box,
@@ -17,6 +17,7 @@ import PageContainer from "../../../src/components/container/PageContainer";
 import Logo from "../../../src/layouts/full/shared/logo/Logo";
 import BlankLayout from "../../../src/layouts/blank/BlankLayout";
 import OtpVerification from "../auth/AuthVerify";
+import Cookies from "js-cookie";
 
 const Verify = () => {
   const theme = useTheme();
@@ -25,16 +26,22 @@ const Verify = () => {
   const [agreed, setAgreed] = useState(false);
 
   const handleAgree = () => {
+    Cookies.set("tc", "false");
     setOpen(false);
     setAgreed(true);
   };
 
   const handleNotAgree = () => {
+    Cookies.set("tc", "true");
     setOpen(true);
     setAgreed(false);
-    localStorage.removeItem("state");
+    Cookies.get("state");
     window.location.href = "/authentication/register";
   };
+
+  useEffect(() => {
+    setOpen(Boolean(Cookies.get("tc")));
+  }, [open]);
 
   return (
     <PageContainer title="Register" description="this is Register page">

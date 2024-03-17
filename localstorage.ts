@@ -1,7 +1,10 @@
-// localStorage.ts
+// cookies.ts
+import Cookies from "js-cookie";
+import { clearCookie } from "./utils/auth";
+
 export const loadState = () => {
   try {
-    const serializedState = localStorage.getItem("state");
+    const serializedState = String(Cookies.get("state"));
     if (serializedState === null) {
       return undefined;
     }
@@ -14,7 +17,7 @@ export const loadState = () => {
 export const saveState = (state: any) => {
   try {
     const serializedState = JSON.stringify(state);
-    localStorage.setItem("state", serializedState);
+    Cookies.set("state", serializedState);
   } catch {
     // ignore write errors
   }
@@ -22,7 +25,8 @@ export const saveState = (state: any) => {
 
 export const deleteState = () => {
   try {
-    localStorage.removeItem("state");
+    clearCookie();
+    window.location.href = "/authentication/login";
   } catch {
     // ignore write errors
   }

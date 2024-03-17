@@ -11,18 +11,21 @@ import { resendOtp, verify } from "../../../actions/auth";
 import { RootState, AppDispatch } from "../../../store";
 import { useSelector, useDispatch } from "react-redux";
 import { useRouter } from "next/router";
-import Link from "next/link";
+import Cookies from "js-cookie";
+import { clearCookie } from "../../../utils/auth";
 
 export const OtpVerification = () => {
   const router = useRouter();
   const dispatch: AppDispatch = useDispatch();
   const auth = useSelector((state: RootState) => state?.auth);
+  const err = useSelector((state: RootState) => state?.error);
   const [otp, setOtp] = useState<string[]>(Array(8).fill(""));
   const [validOtp, setValidOtp] = useState<any>([]);
   const [seconds, setSeconds] = useState(120);
   const [isActive, setIsActive] = useState(false);
   const [open, setOpen] = useState(false);
-  const [agreed, setAgreed] = useState(false);
+  const [error, setError] = useState();
+  const [codeExpired, setCodeExpired] = useState(false);
 
   useEffect(() => {
     let interval: NodeJS.Timeout;
@@ -38,8 +41,9 @@ export const OtpVerification = () => {
       }, 1000);
     }
 
-    if (seconds === 0) {
+    if (seconds === 0 || Cookies.get("codeExpired") === "true") {
       setIsActive(false);
+      setCodeExpired(true);
     } else {
       setIsActive(true);
     }
@@ -48,9 +52,22 @@ export const OtpVerification = () => {
   }, [seconds, isActive]);
 
   useEffect(() => {
+    Cookies.set("codeExpired", String(codeExpired));
+  }, [codeExpired]);
+
+  useEffect(() => {
+    if (auth?.data === null) {
+      router.push("/authentication/register");
+    }
+  }, [auth?.data?.user]);
+
+  useEffect(() => {
+    setError(err?.data?.errors[0]?.reason);
+  }, [err?.data?.errors]);
+
+  useEffect(() => {
     const handleBeforeUnload = (event: BeforeUnloadEvent) => {
-      localStorage.removeItem("state");
-      localStorage.removeItem("user");
+      clearCookie();
       if (isActive) {
         event.preventDefault();
         event.returnValue = "none"; // For Chrome
@@ -92,9 +109,8 @@ export const OtpVerification = () => {
     setSeconds(120);
     setIsActive(true);
     setOtp(Array(8).fill(""));
-    dispatch(
-      resendOtp(JSON.parse(localStorage.getItem("user") ?? "{}")?.email)
-    );
+    Cookies.set("codeExpired", "false");
+    dispatch(resendOtp(JSON.parse(Cookies.get("user") ?? "{}")?.email));
   };
 
   const handleVerifyOtp = (otpVal: any) => {
@@ -105,7 +121,7 @@ export const OtpVerification = () => {
           code: otpString,
           permission: auth?.data?.user?.permission,
         },
-        JSON.parse(localStorage.getItem("user") ?? "{}")?.email
+        JSON.parse(Cookies.get("user") ?? "{}")?.email
       )
     );
   };
@@ -160,6 +176,17 @@ export const OtpVerification = () => {
           <div style={{ display: "flex" }}>{renderOtpInputs()}</div>
         )}
 
+        {error && (
+          <Typography
+            variant="body1"
+            color="error"
+            alignContent="center"
+            mt={2}
+            mb={2}
+          >
+            {error}
+          </Typography>
+        )}
         <Button onClick={handleResendOtp} disabled={isActive}>
           Resend OTP {isActive && `(${formatTime(seconds)})`}
         </Button>
@@ -189,13 +216,12 @@ export const OtpVerification = () => {
               }}
               color="primary"
               disableElevation
-              component={Link}
-              href="/authentication/login"
               variant="outlined"
               aria-label="logout"
               size="small"
               onClick={() => {
-                localStorage.clear;
+                clearCookie();
+                router.push("/authentication/login");
               }}
             >
               Login

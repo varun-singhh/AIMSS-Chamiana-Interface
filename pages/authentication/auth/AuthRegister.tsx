@@ -18,6 +18,7 @@ import { RootState, AppDispatch } from "../../../store";
 import { register } from "../../../actions/auth";
 import { useRouter } from "next/router";
 import CustomTextField from "../../../src/components/forms/theme-elements/CustomTextField";
+import Cookies from "js-cookie";
 
 interface registerType {
   title?: string;
@@ -43,7 +44,7 @@ const AuthRegister = ({ title, subtitle, subtext }: registerType) => {
 
   useEffect(() => {
     if (auth?.data !== null) {
-      localStorage.setItem("user", JSON.stringify(auth?.data?.user));
+      Cookies.set("user", JSON.stringify(auth?.data?.user));
     }
     setAuthState(auth);
     setErrorState(err);

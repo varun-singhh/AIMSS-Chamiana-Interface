@@ -1,5 +1,6 @@
 import axios from "axios";
 import ProgressBar from "@badrap/bar-of-progress";
+import Cookies from "js-cookie";
 
 export const baseURL = "http://localhost:8000/api/";
 
@@ -30,3 +31,10 @@ export const progress = new ProgressBar({
   className: "z-50",
   delay: 100,
 });
+
+export const clearCookie = () => {
+  const cookies = Cookies.get();
+  Object.keys(cookies).forEach((cookieName) => {
+    Cookies.remove(cookieName);
+  });
+};

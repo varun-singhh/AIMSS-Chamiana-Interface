@@ -18,6 +18,7 @@ import { RootState, AppDispatch } from "../../../store";
 import { login } from "../../../actions/auth";
 import { useRouter } from "next/router";
 import CustomTextField from "../../../src/components/forms/theme-elements/CustomTextField";
+import Cookies from "js-cookie";
 
 interface loginType {
   title?: string;
@@ -86,7 +87,7 @@ const AuthLogin = ({ title, subtitle, subtext }: loginType) => {
 
   useEffect(() => {
     if (state?.loggedIn) {
-      localStorage.setItem("token", state?.data?.token);
+      Cookies.set("token", state?.data?.token);
       router.push("/");
     }
   }, [state?.loggedIn]);

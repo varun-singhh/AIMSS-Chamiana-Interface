@@ -1,5 +1,5 @@
-import type { ReactElement, ReactNode } from "react";
-import ProgressBar from '@badrap/bar-of-progress';
+import { ReactElement, ReactNode, useEffect } from "react";
+import ProgressBar from "@badrap/bar-of-progress";
 import type { NextPage } from "next";
 import Head from "next/head";
 import { AppProps } from "next/app";
@@ -10,20 +10,22 @@ import createEmotionCache from "../src/createEmotionCache";
 import { baselightTheme } from "../src/theme/DefaultColors";
 import store from "../store";
 import { Provider } from "react-redux";
-import { Router } from 'next/dist/client/router';
+import { Router } from "next/dist/client/router";
+import { useRouter } from "next/navigation";
+import Cookies from "js-cookie";
 
 const progress = new ProgressBar({
   size: 4,
-  color: '#0384fc',
-  className: 'z-50',
+  color: "#0384fc",
+  className: "z-50",
   delay: 100,
 });
 // Client-side cache, shared for the whole session of the user in the browser.
 const clientSideEmotionCache = createEmotionCache();
 
-Router.events.on('routeChangeStart', progress.start);
-Router.events.on('routeChangeComplete', progress.finish);
-Router.events.on('routeChangeError', progress.finish);
+Router.events.on("routeChangeStart", progress.start);
+Router.events.on("routeChangeComplete", progress.finish);
+Router.events.on("routeChangeError", progress.finish);
 
 type NextPageWithLayout = NextPage & {
   getLayout?: (page: ReactElement) => ReactNode;
@@ -39,6 +41,14 @@ const MyApp = (props: MyAppProps) => {
   const theme = baselightTheme;
 
   const getLayout = Component.getLayout ?? ((page) => page);
+
+  const router = useRouter();
+
+  useEffect(() => {
+    if (Cookies.get("token") === null) {
+      router.push("/authentication/login");
+    }
+  }, []);
 
   return (
     <CacheProvider value={emotionCache}>
