@@ -12,7 +12,6 @@ import {
   useMediaQuery,
   useTheme,
 } from "@mui/material";
-import Link from "next/link";
 import PageContainer from "../../../src/components/container/PageContainer";
 import Logo from "../../../src/layouts/full/shared/logo/Logo";
 import BlankLayout from "../../../src/layouts/blank/BlankLayout";
@@ -22,7 +21,9 @@ import Cookies from "js-cookie";
 const Verify = () => {
   const theme = useTheme();
   const isLargeScreen = useMediaQuery(theme.breakpoints.up("lg")); // Check for large screens (lg breakpoint)
-  const [open, setOpen] = useState(true);
+  const [open, setOpen] = useState(
+    Cookies.get("tc") ? Boolean(Cookies.get("tc")) : true
+  );
   const [agreed, setAgreed] = useState(false);
 
   const handleAgree = () => {
@@ -38,10 +39,6 @@ const Verify = () => {
     Cookies.get("state");
     window.location.href = "/authentication/register";
   };
-
-  useEffect(() => {
-    setOpen(Boolean(Cookies.get("tc")) ?? true);
-  }, [open]);
 
   return (
     <PageContainer title="Register" description="this is Register page">

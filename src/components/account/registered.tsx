@@ -1,14 +1,21 @@
 import { Button, Stack, Typography, Modal } from "@mui/material";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { clearCookie } from "../../../utils/auth";
 import { useRouter } from "next/router";
 
 const registered = ({ open, handleOpen }: any) => {
+  const [count, setCount] = useState(0);
   const [isopen, setOpen] = useState(open ?? false);
   const router = useRouter();
 
+  useEffect(() => {
+    if (count > 0) {
+      setOpen(false);
+    }
+  }, [count]);
+
   return (
-    <Modal open={isopen}>
+    <Modal open={count === 0 ? isopen : false}>
       <div
         style={{
           position: "absolute",
@@ -41,6 +48,7 @@ const registered = ({ open, handleOpen }: any) => {
               setOpen(false);
               clearCookie();
               router.push("/authentication/login");
+              setCount(count + 1);
             }}
           >
             Login
