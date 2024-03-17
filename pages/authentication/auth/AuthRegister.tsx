@@ -19,6 +19,7 @@ import { register } from "../../../actions/auth";
 import { useRouter } from "next/router";
 import CustomTextField from "../../../src/components/forms/theme-elements/CustomTextField";
 import Cookies from "js-cookie";
+import RegisterConfirmation from "../../../src/components/account/registered";
 
 interface registerType {
   title?: string;
@@ -41,18 +42,25 @@ const AuthRegister = ({ title, subtitle, subtext }: registerType) => {
   const [phoneError, setPhoneError] = useState(false);
   const [registerEventTrigged, SetRegisterEventTrigger] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [showPopup, setShowPopup] = useState(false);
 
   useEffect(() => {
     if (auth?.data !== null) {
       Cookies.set("user", JSON.stringify(auth?.data?.user));
     }
+
     setAuthState(auth);
     setErrorState(err);
-  }, [registerEventTrigged]);
+  }, [auth?.data, registerEventTrigged]);
 
   useEffect(() => {
-    if (auth?.data !== null) {
+    if (auth?.data !== null && auth?.data?.user?.email !== undefined) {
       router.push("/authentication/verify");
+    } else if (
+      auth?.data?.user?.phone !== undefined &&
+      auth?.data?.user?.email === undefined
+    ) {
+      setShowPopup(true);
     }
 
     if (auth?.loggedIn) {
@@ -93,6 +101,10 @@ const AuthRegister = ({ title, subtitle, subtext }: registerType) => {
       : { phone, password, permission };
     await dispatch(register(data));
     SetRegisterEventTrigger(!registerEventTrigged);
+  };
+
+  const handlePopupOpen = () => {
+    setShowPopup(false);
   };
 
   return (
@@ -253,6 +265,12 @@ const AuthRegister = ({ title, subtitle, subtext }: registerType) => {
             )}
           </Box>
           {subtitle}
+          {showPopup && (
+            <RegisterConfirmation
+              open={showPopup}
+              handleOpen={handlePopupOpen}
+            />
+          )}
         </>
       )}
     </form>

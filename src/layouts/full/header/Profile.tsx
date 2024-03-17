@@ -30,8 +30,6 @@ const Profile = (rootState: any) => {
     setAnchorEl2(null);
   };
 
-  console.log(Cookies.get("token"));
-
   return (
     <Box>
       <IconButton

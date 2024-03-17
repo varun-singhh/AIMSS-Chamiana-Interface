@@ -40,7 +40,7 @@ const Verify = () => {
   };
 
   useEffect(() => {
-    setOpen(Boolean(Cookies.get("tc")));
+    setOpen(Boolean(Cookies.get("tc")) ?? true);
   }, [open]);
 
   return (

@@ -28,7 +28,8 @@ interface loginType {
 
 const AuthLogin = ({ title, subtitle, subtext }: loginType) => {
   const router = useRouter();
-  const state = useSelector((state: RootState) => state?.auth);
+  const auth = useSelector((state: RootState) => state?.auth);
+  const err = useSelector((state: RootState) => state?.error);
   const dispatch: AppDispatch = useDispatch();
 
   const [email, setEmail] = useState("");
@@ -82,27 +83,27 @@ const AuthLogin = ({ title, subtitle, subtext }: loginType) => {
         })
       );
     }
-    console.log(state);
+    console.log(err);
   };
 
   useEffect(() => {
-    if (state?.loggedIn) {
-      Cookies.set("token", state?.data?.token);
+    if (auth?.loggedIn) {
+      Cookies.set("token", auth?.data?.token);
       router.push("/");
     }
-  }, [state?.loggedIn]);
+  }, [auth?.loggedIn]);
 
   useEffect(() => {
-    if (state?.data?.errors?.length > 0) {
+    if (err?.data?.errors?.length > 0) {
       setTimeout(() => {
         setLoggedInStatus(true);
       }, 500);
     }
-  }, [state?.data?.errors]);
+  }, [err?.data?.errors]);
 
   return (
     <form onSubmit={handleSubmit}>
-      {state && (
+      {auth && (
         <>
           {title && (
             <Typography fontWeight="700" variant="h2" mb={1}>
@@ -231,7 +232,7 @@ const AuthLogin = ({ title, subtitle, subtext }: loginType) => {
               mt={2}
               mb={2}
             >
-              {state?.data?.errors[0]?.reason}
+              {err?.data?.errors[0]?.reason}
             </Typography>
           )}
           <Box>
@@ -242,7 +243,7 @@ const AuthLogin = ({ title, subtitle, subtext }: loginType) => {
               fullWidth
               type="submit"
             >
-              {state?.loading ? <CircularProgress size={24} /> : "Sign In"}
+              {auth?.loading ? <CircularProgress size={24} /> : "Sign In"}
             </Button>
           </Box>
           {subtitle}
