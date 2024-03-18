@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import type { ReactElement } from "react";
 import PageContainer from "../../../src/components/container/PageContainer";
 import DashboardCard from "../../../src/components/shared/DashboardCard";
@@ -12,6 +12,7 @@ import { Button, CircularProgress } from "@mui/material";
 import { useSelector, useDispatch } from "react-redux";
 import { RootState, AppDispatch } from "../../../store";
 import { createForm } from "../../../actions/forms";
+import { getAllDoctorsDetails } from "../../../actions/doctors";
 
 const FloatingButtonContainer = styled("div")({
   position: "fixed",
@@ -744,11 +745,13 @@ const acsDoctorAssigned = [
     children: [
       {
         field: "Doctor Name",
-        type: "string",
-      },
-      {
-        field: "Doctor Id",
-        type: "string",
+        type: "menu",
+        menuItem: [
+          "Hemorrhagic",
+          "Ischemic stroke",
+          "Heart Failure",
+          "Sudden Death",
+        ],
       },
     ],
   },
@@ -927,13 +930,14 @@ const ACSCaseFormPage = () => {
     window.history.back(); // Go back to the previous page
   };
 
-  const state = useSelector((state: RootState) => state);
+  const authState = useSelector((state: RootState) => state?.auth?.loggedIn);
+  const userState = useSelector((state: RootState) => state?.user?.data);
   const dispatch: AppDispatch = useDispatch();
+  const [doctors, setDoctors] = useState([]);
 
   const handleSubmitWithLoader = () => {
     setLoading(true);
     setTimeout(() => {
-      console.log(acsData);
       setLoading(false);
       dispatch(
         createForm(
@@ -948,6 +952,15 @@ const ACSCaseFormPage = () => {
       );
     }, 4000);
   };
+
+  useEffect(() => {
+    if (userState !== undefined && authState) {
+      dispatch(getAllDoctorsDetails());
+      acsDoctorAssigned[0]["children"][0]["menuItem"] = userState?.data?.map(
+        (res) => res?.doctor_details?.name
+      );
+    }
+  }, []);
 
   return (
     <>

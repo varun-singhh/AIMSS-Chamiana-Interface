@@ -6,6 +6,8 @@ export const baseURL = "http://localhost:8000/api/";
 
 export const authBaseURL = "http://localhost:2222/api/";
 
+export const userServiceBaseURL = "http://localhost:8000/";
+
 export const setAuthToken = (token: string | null): void => {
   if (token) {
     axios.defaults.headers.common["x-auth-token"] = token;

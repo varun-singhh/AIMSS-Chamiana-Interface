@@ -15,18 +15,27 @@ import PageContainer from "../../src/components/container/PageContainer";
 import DashboardCard from "../../src/components/shared/DashboardCard";
 import FullLayout from "../../src/layouts/full/FullLayout";
 import { useSelector } from "react-redux";
-import { RootState } from "../../store";
+import { AppDispatch, RootState } from "../../store";
 import { getDateFromString } from "../../utils/auth";
 import EmailIcon from "@mui/icons-material/Email";
 import PhoneIcon from "@mui/icons-material/Phone";
 import DateRangeIcon from "@mui/icons-material/DateRange";
 import LockIcon from "@mui/icons-material/Lock";
+import { useDispatch } from "react-redux";
+import { getDoctorDetails } from "../../actions/doctors";
+import {
+  IconBuilding,
+  IconHealthRecognition,
+  IconId,
+  IconMapPin,
+  IconMan,
+} from "@tabler/icons-react";
 
 const ProfileAvatar = styled(Avatar)(({ theme }) => ({
   width: theme.spacing(20),
   height: theme.spacing(20),
   marginLeft: theme.spacing(5),
-  marginTop: theme.spacing(18),
+  marginTop: theme.spacing(15),
   position: "absolute",
   zIndex: theme.zIndex.tooltip + 1,
   border: `5px solid white`,
@@ -48,14 +57,17 @@ const StatusIcon = styled("div")(({ theme, status }) => ({
 }));
 
 const MyProfilePage = () => {
+  const dispatch: AppDispatch = useDispatch();
   const [state, setState] = useState<any>();
   const rootState = useSelector((state: RootState) => state?.auth?.data?.user);
+  const userState = useSelector((state: RootState) => state?.user);
 
   useEffect(() => {
+    if (state?.id > 0) {
+      dispatch(getDoctorDetails(state?.id));
+    }
     setState(rootState);
-  });
-
-  console.log(state);
+  }, []);
 
   return (
     <PageContainer title="My Profile" description="this is profile page">
@@ -102,7 +114,7 @@ const MyProfilePage = () => {
               <ProfileAvatar src="/images/profile/user-1.jpg" />
             </Card>
           </DashboardCard>
-          <DashboardCard>
+          <DashboardCard title="Acccount Details">
             <List>
               <ListItem>
                 <ListItemIcon>
@@ -150,6 +162,88 @@ const MyProfilePage = () => {
                     variant="body1"
                     color="#1976d2"
                   >{`${state?.permission}`}</Typography>
+                </ListItemText>
+              </ListItem>
+            </List>
+          </DashboardCard>
+          <DashboardCard title="Professional Details">
+            <List>
+              <ListItem>
+                <ListItemIcon>
+                  <IconBuilding />
+                </ListItemIcon>
+                <ListItemText>
+                  Department
+                  <Typography
+                    variant="body1"
+                    color="#1976d2"
+                  >{`${userState?.data?.department}`}</Typography>
+                </ListItemText>
+              </ListItem>
+              <ListItem>
+                <ListItemIcon>
+                  <IconHealthRecognition />
+                </ListItemIcon>
+                <ListItemText>
+                  Designation
+                  <Typography
+                    variant="body1"
+                    color="#1976d2"
+                  >{`${userState?.data?.designation}`}</Typography>
+                </ListItemText>
+              </ListItem>
+              <ListItem>
+                <ListItemIcon>
+                  <IconId />
+                </ListItemIcon>
+                <ListItemText>
+                  License Number
+                  <Typography
+                    variant="body1"
+                    color="#1976d2"
+                  >{`${userState?.data?.doctor_details?.license_number}`}</Typography>
+                </ListItemText>
+              </ListItem>
+            </List>
+          </DashboardCard>
+          <DashboardCard title="Personal Details">
+            <List>
+              <ListItem>
+                <ListItemIcon>
+                  <DateRangeIcon />
+                </ListItemIcon>
+                <ListItemText>
+                  Date of Birth
+                  <Typography
+                    variant="body1"
+                    color="#1976d2"
+                  >{`${getDateFromString(
+                    userState?.data?.doctor_details?.DOB
+                  )}`}</Typography>
+                </ListItemText>
+              </ListItem>
+              <ListItem>
+                <ListItemIcon>
+                  <IconMapPin />
+                </ListItemIcon>
+                <ListItemText>
+                  Address
+                  <Typography
+                    variant="body1"
+                    color="#1976d2"
+                  >{`${userState?.data?.doctor_details?.city} ${userState?.data?.doctor_details?.district} ${userState?.data?.doctor_details?.state}, Pin: ${userState?.data?.doctor_details?.pincode}`}</Typography>
+                </ListItemText>
+              </ListItem>
+              <ListItem>
+                <ListItemIcon>
+                  <IconMan />
+                </ListItemIcon>
+                <ListItemText>
+                  Gender
+                  <Typography
+                    variant="body1"
+                    color="#1976d2"
+                  >{`${userState?.data?.doctor_details?.gender}`}</Typography>
                 </ListItemText>
               </ListItem>
             </List>
