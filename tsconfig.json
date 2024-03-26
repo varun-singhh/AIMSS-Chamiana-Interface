@@ -22,7 +22,8 @@
     "**/*.tsx",
     "pages/sample-page/index.tsz",
     "pages/profile/index.tsz",
-    "pages/profile/index.js"
+    "pages/profile/index.js",
+    "src/components/table/table.js"
   ],
   "exclude": ["node_modules"]
 }

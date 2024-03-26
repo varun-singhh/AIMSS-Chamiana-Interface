@@ -12,6 +12,10 @@ import {
   ERROR_GET_ALL_DOCTORS,
   ERROR_CREATE_DOCTOR,
   CLEAR_ERR_STATE,
+  ERROR_PATIENT_DETAILS,
+  ERROR_CREATE_PATIENT,
+  ERROR_GET_ALL_PATIENTS,
+  ERR_LOADING,
 } from "../actions/types";
 
 interface ErrorState {
@@ -28,7 +32,7 @@ const initialState: ErrorState = {
 
 const errorReducer: Reducer<ErrorState> = (state = initialState, action) => {
   switch (action.type) {
-    case LOADING:
+    case ERR_LOADING:
       return {
         ...state,
         loading: true,
@@ -96,7 +100,7 @@ const errorReducer: Reducer<ErrorState> = (state = initialState, action) => {
         ...state,
         loading: false,
         data: action.payload,
-        message: "error creating new doctor account",
+        message: "error creating new doctor",
       };
     case ERROR_GET_ALL_DOCTORS:
       return {
@@ -104,6 +108,27 @@ const errorReducer: Reducer<ErrorState> = (state = initialState, action) => {
         loading: false,
         data: action.payload,
         message: "error fetching all doctors details",
+      };
+    case ERROR_PATIENT_DETAILS:
+      return {
+        ...state,
+        loading: false,
+        data: action.payload,
+        message: "error fetching patient details",
+      };
+    case ERROR_CREATE_PATIENT:
+      return {
+        ...state,
+        loading: false,
+        data: action.payload,
+        message: "error creating new patient",
+      };
+    case ERROR_GET_ALL_PATIENTS:
+      return {
+        ...state,
+        loading: false,
+        data: action.payload,
+        message: "error fetching all patients details",
       };
     case CLEAR_ERR_STATE:
       return {

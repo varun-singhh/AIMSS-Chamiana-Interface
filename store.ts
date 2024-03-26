@@ -12,7 +12,7 @@ const store = configureStore({
 
 // Subscribe to store changes and save the state to localStorage
 store.subscribe(() => {
-  saveState(store.getState()); // Save the entire Redux state
+  // saveState(store.getState()); // Save the entire Redux state
 });
 
 export type RootState = ReturnType<typeof store.getState>;
