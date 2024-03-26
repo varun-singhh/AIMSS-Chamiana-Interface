@@ -13,6 +13,7 @@ import { Provider } from "react-redux";
 import { Router } from "next/dist/client/router";
 import { useRouter } from "next/navigation";
 import Cookies from "js-cookie";
+import { StyledEngineProvider } from "@mui/material/styles";
 
 const progress = new ProgressBar({
   size: 4,
@@ -51,19 +52,21 @@ const MyApp = (props: MyAppProps) => {
   }, []);
 
   return (
-    <CacheProvider value={emotionCache}>
-      <Head>
-        <meta name="viewport" content="initial-scale=1, width=device-width" />
-        <title>AIMSS Chamiana</title>
-      </Head>
-      <ThemeProvider theme={theme}>
-        {/* CssBaseline kickstart an elegant, consistent, and simple baseline to build upon. */}
-        <CssBaseline />
-        <Provider store={store}>
-          {getLayout(<Component {...pageProps} />)}
-        </Provider>
-      </ThemeProvider>
-    </CacheProvider>
+    <StyledEngineProvider injectFirst>
+      <CacheProvider value={emotionCache}>
+        <Head>
+          <meta name="viewport" content="initial-scale=1, width=device-width" />
+          <title>AIMSS Chamiana</title>
+        </Head>
+        <ThemeProvider theme={theme}>
+          {/* CssBaseline kickstart an elegant, consistent, and simple baseline to build upon. */}
+          <CssBaseline />
+          <Provider store={store}>
+            {getLayout(<Component {...pageProps} />)}
+          </Provider>
+        </ThemeProvider>
+      </CacheProvider>
+    </StyledEngineProvider>
   );
 };
 

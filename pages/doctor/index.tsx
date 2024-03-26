@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Typography,
   TextField,
@@ -12,13 +12,7 @@ import {
   InputLabel,
   Select,
   MenuItem,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-  Paper,
+  CircularProgress, // Import CircularProgress for the loader
 } from "@mui/material";
 
 import { styled } from "@mui/material/styles";
@@ -27,21 +21,23 @@ import FullLayout from "../../src/layouts/full/FullLayout";
 import DashboardCard from "../../src/components/shared/DashboardCard";
 import { useSelector, useDispatch } from "react-redux";
 import { AppDispatch, RootState } from "../../store";
-import { getAllDoctorsDetails } from "../../actions/doctors";
+import { createNewDoctor, getAllDoctorsDetails } from "../../actions/doctors";
 import StickyHeadTable from "../../src/components/table/table";
+import { red } from "@mui/material/colors";
 
 interface doctor {
   name: string;
   phoneNumber: string;
-  aadharNumber: string;
+  licenseNumber: string;
   dateOfBirth: string;
   gender: string;
   age: number;
-  city: string;
+  block: string;
   district: string;
   pincode: number;
   state: string;
   email: string;
+  designation: string;
 }
 
 const FloatingButtonContainer = styled("div")({
@@ -55,47 +51,57 @@ const SamplePage = () => {
   const dispatch: AppDispatch = useDispatch();
   const authState = useSelector((state: RootState) => state?.auth?.loggedIn);
   const userState = useSelector((state: RootState) => state?.user?.data);
+  const errState = useSelector(
+    (state: RootState) => state?.error?.data?.errors
+  );
 
-  const [searchQuery, setSearchQuery] = useState<string>("");
+  const [searchNameQuery, setNameSearchQuery] = useState<string>("");
+  const [searchPhoneQuery, setPhoneSearchQuery] = useState<string>("");
+
   const [searchResults, setSearchResults] = useState<doctor[]>([]);
   const [nameSuggestions, setNameSuggestions] = useState<string[]>([]);
   const [selecteddoctor, setSelecteddoctor] = useState<doctor | null>(null);
   const [isNewdoctorDialogOpen, setIsNewdoctorDialogOpen] =
     useState<boolean>(false);
   const [newdoctorDetails, setNewdoctorDetails] = useState<Partial<doctor>>({});
-  // Dummy doctor data for demonstration
-  const [doctors, setDoctors] = useState([]);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [buttonLoading, setButtonLoading] = useState<boolean>(false);
+  const [doctors, setDoctors] = useState<doctor[]>([]);
 
   // Function to handle search by name
   const handleNameSearch = (name: string) => {
+    const regex = new RegExp(name, "i"); // 'i' flag for case-insensitive search
     const matcheddoctors = doctors.filter((doctor) =>
-      doctor?.doctor_details?.name.toLowerCase().includes(name.toLowerCase())
+      regex.test(doctor?.doctor_details?.name)
     );
+    console.log(matcheddoctors);
     setSearchResults(matcheddoctors);
   };
 
   // Function to handle search by phone number
   const handlePhoneSearch = (phone: string) => {
-    const matcheddoctor = doctors.find(
-      (doctor) => doctor?.doctor_contact?.phone === phone
+    const regex = new RegExp(phone);
+    const matcheddoctors = doctors.filter((doctor) =>
+      regex.test(doctor?.doctor_contact?.phone)
     );
-    setSearchResults(matcheddoctor ? [matcheddoctor] : []);
+    setSearchResults(matcheddoctors);
   };
 
   // Function to handle search
   const handleSearch = () => {
     if (!selecteddoctor) {
-      if (!isNaN(Number(searchQuery)) && searchQuery.length === 10) {
-        handlePhoneSearch(searchQuery);
+      if (searchPhoneQuery != "") {
+        handlePhoneSearch(searchPhoneQuery);
       } else {
-        handleNameSearch(searchQuery);
+        handleNameSearch(searchNameQuery);
       }
     }
   };
 
   // Function to reset search
   const resetSearch = () => {
-    setSearchQuery("");
+    setNameSearchQuery("");
+    setPhoneSearchQuery("");
     setSearchResults([]);
     setSelecteddoctor(null);
   };
@@ -112,25 +118,70 @@ const SamplePage = () => {
 
   // Function to handle submission of the new doctor form
   const handleNewdoctorSubmit = () => {
+    setButtonLoading(true);
     // Implement logic to handle submission of new doctor form
     // Here you can save newdoctorDetails to your database or perform other actions
-    console.log("New doctor details:", newdoctorDetails);
-    // Close the dialog after submission
-    setIsNewdoctorDialogOpen(false);
-    // Clear newdoctorDetails state
-    setNewdoctorDetails({});
+    dispatch(
+      createNewDoctor({
+        doctor_details: {
+          name: `Dr. ` + newdoctorDetails?.name,
+          DOB: newdoctorDetails?.dateOfBirth,
+          age: newdoctorDetails.age?.toString(),
+          block: newdoctorDetails?.block,
+          state: newdoctorDetails?.state,
+          district: newdoctorDetails?.district,
+          pincode: newdoctorDetails?.pincode?.toString(),
+          gender: newdoctorDetails?.gender,
+          license_number: newdoctorDetails?.licenseNumber,
+        },
+        doctor_contact: {
+          email: newdoctorDetails?.email,
+          phone: newdoctorDetails?.phoneNumber,
+        },
+        department: "Cardiology",
+        designation: newdoctorDetails?.designation,
+      })
+    );
   };
+
+  console.log(searchResults.length);
 
   useEffect(() => {
     if (authState) {
       dispatch(getAllDoctorsDetails());
-      setDoctors(userState?.data);
     }
-  }, []);
+  }, [authState, dispatch]);
+
+  useEffect(() => {
+    if (userState) {
+      setDoctors(userState.data);
+      setLoading(false); // Set loading to false once data is available
+    }
+  }, [userState]);
+
+  useEffect(() => {
+    if (errState === undefined || errState?.length == 0) {
+      dispatch(getAllDoctorsDetails());
+      // Close the dialog after submission
+      setIsNewdoctorDialogOpen(false);
+      // Clear newdoctorDetails state
+      setNewdoctorDetails({});
+
+      setButtonLoading(false);
+    } else {
+      setButtonLoading(false);
+    }
+  }, [errState]);
+
+  useEffect(() => {
+    if (searchNameQuery === "" && searchPhoneQuery === "") {
+      resetSearch();
+    }
+  }, [searchNameQuery, searchPhoneQuery]);
 
   return (
     <PageContainer title="Doctor" description="This is doctors page">
-      <DashboardCard title="Doctor | Find Details & Create New Entry">
+      <DashboardCard title="Doctor Management Panel">
         <>
           <Grid container spacing={2} alignItems="center">
             <Grid item xs={6}>
@@ -140,65 +191,46 @@ const SamplePage = () => {
                 renderInput={(params) => (
                   <TextField
                     {...params}
-                    label="Name"
+                    label="Search doctor by name"
                     variant="outlined"
                     fullWidth
-                    value={searchQuery}
-                    // onChange={(e) => setSearchQuery(e.target.value)}
+                    value={searchNameQuery}
                     onKeyDown={(e) => {
                       if (e.key === "Enter") {
                         handleSearch();
                       }
                     }}
+                    onChange={(e) => {
+                      setNameSearchQuery(e.target.value);
+                      handleSearch();
+                    }}
                   />
                 )}
-                // onInputChange={(event, newValue) => {
-                //   setSearchQuery(newValue);
-                //   setNameSuggestions(
-                //     doctors
-                //       .map((doctor) => doctor?.name)
-                //       .filter((name) =>
-                //         name.toLowerCase().includes(newValue.toLowerCase())
-                //       )
-                //   );
-                // }}
-                inputValue={searchQuery}
-                // onChange={(event, newValue) => {
-                //   if (newValue) {
-                //     const founddoctor = doctors.find(
-                //       (doctor) => doctor?.name === newValue
-                //     );
-                //     setSelecteddoctor(founddoctor || null);
-                //   } else {
-                //     setSelecteddoctor(null);
-                //   }
-                //   setSearchQuery(newValue || "");
-                // }}
+                inputValue={searchNameQuery}
               />
             </Grid>
             <Grid item xs={6}>
               <TextField
-                label="Phone Number"
+                label="Search doctor by phone number"
                 variant="outlined"
                 fullWidth
-                value={selecteddoctor ? selecteddoctor.phoneNumber : ""}
-                // onChange={(e) => setSearchQuery(e.target.value)}
+                value={searchPhoneQuery}
                 onKeyDown={(e) => {
                   if (e.key === "Enter") {
                     handleSearch();
                   }
                 }}
-                disabled={!!selecteddoctor}
+                onChange={(e) => {
+                  setPhoneSearchQuery(e.target.value);
+                  handleSearch();
+                }}
               />
             </Grid>
-            <Grid item xs={12} sx={{ display: "flex", gap: "10px" }}>
-              <Button variant="contained" onClick={handleSearch}>
-                Get doctor Details
-              </Button>
+            {/* <Grid item xs={12} sx={{ display: "flex", gap: "10px" }}>
               <Button variant="contained" onClick={resetSearch}>
                 Reset Details
               </Button>
-            </Grid>
+            </Grid> */}
           </Grid>
 
           {/* Tile for creating a new doctor */}
@@ -235,6 +267,7 @@ const SamplePage = () => {
                   <TextField
                     label="Email"
                     variant="outlined"
+                    type="email"
                     fullWidth
                     value={newdoctorDetails.email || ""}
                     onChange={(e) =>
@@ -266,11 +299,11 @@ const SamplePage = () => {
                     label="Liscence Number"
                     variant="outlined"
                     fullWidth
-                    value={newdoctorDetails.aadharNumber || ""}
+                    value={newdoctorDetails.licenseNumber || ""}
                     onChange={(e) =>
                       setNewdoctorDetails({
                         ...newdoctorDetails,
-                        aadharNumber: e.target.value,
+                        licenseNumber: e.target.value,
                       })
                     }
                   />
@@ -308,14 +341,14 @@ const SamplePage = () => {
                 </Grid>
                 <Grid item xs={6}>
                   <TextField
-                    label="City"
+                    label="Block"
                     variant="outlined"
                     fullWidth
-                    value={newdoctorDetails.city || ""}
+                    value={newdoctorDetails.block || ""}
                     onChange={(e) =>
                       setNewdoctorDetails({
                         ...newdoctorDetails,
-                        city: e.target.value,
+                        block: e.target.value,
                       })
                     }
                   />
@@ -363,8 +396,9 @@ const SamplePage = () => {
                   />
                 </Grid>
                 <Grid item xs={6}>
-                  <InputLabel>Gender</InputLabel>
                   <Select
+                    label="Select Gender"
+                    renderValue={(selected) => selected || `Select Gender`}
                     value={newdoctorDetails.gender || ""}
                     onChange={(e) =>
                       setNewdoctorDetails({
@@ -380,28 +414,70 @@ const SamplePage = () => {
                     <MenuItem value="other">Other</MenuItem>
                   </Select>
                 </Grid>
+                <Grid item xs={6}>
+                  <TextField
+                    label="Designation"
+                    variant="outlined"
+                    fullWidth
+                    value={newdoctorDetails.designation || ""}
+                    onChange={(e) =>
+                      setNewdoctorDetails({
+                        ...newdoctorDetails,
+                        designation: e.target.value,
+                      })
+                    }
+                  />
+                </Grid>
               </Grid>
+              {!buttonLoading && errState?.length > 0 ? (
+                <Typography color="red" px={2} py={2}>
+                  {errState?.[0]?.reason}
+                </Typography>
+              ) : (
+                <></>
+              )}
             </DialogContent>
 
             <DialogActions>
-              <Button onClick={handleCloseNewdoctorDialog} color="inherit">
-                Cancel
-              </Button>
-              <Button
-                onClick={handleNewdoctorSubmit}
-                color="primary"
-                variant="contained"
-              >
-                Submit
-              </Button>
+              {buttonLoading ? (
+                <CircularProgress
+                  style={{ margin: "10px auto", display: "block" }}
+                />
+              ) : (
+                <>
+                  <Button onClick={handleCloseNewdoctorDialog} color="inherit">
+                    Cancel
+                  </Button>
+                  <Button
+                    onClick={handleNewdoctorSubmit}
+                    color="primary"
+                    variant="contained"
+                  >
+                    Submit
+                  </Button>
+                </>
+              )}
             </DialogActions>
           </Dialog>
         </>
       </DashboardCard>
 
-      <DashboardCard>
-        <StickyHeadTable rows={doctors} />
-      </DashboardCard>
+      {/* Conditional rendering of loader or table */}
+      {loading ? (
+        <CircularProgress style={{ margin: "20px auto", display: "block" }} />
+      ) : (
+        <>
+          {doctors?.length > 0 ? (
+            searchResults.length > 0 ? (
+              <StickyHeadTable rows={searchResults} category={"doctors"} />
+            ) : (
+              <StickyHeadTable rows={doctors} category={"doctors"} />
+            )
+          ) : (
+            ""
+          )}
+        </>
+      )}
     </PageContainer>
   );
 };

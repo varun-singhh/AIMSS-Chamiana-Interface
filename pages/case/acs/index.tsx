@@ -933,7 +933,6 @@ const ACSCaseFormPage = () => {
   const authState = useSelector((state: RootState) => state?.auth?.loggedIn);
   const userState = useSelector((state: RootState) => state?.user?.data);
   const dispatch: AppDispatch = useDispatch();
-  const [doctors, setDoctors] = useState([]);
 
   const handleSubmitWithLoader = () => {
     setLoading(true);

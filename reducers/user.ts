@@ -4,6 +4,8 @@ import {
   ERROR_DOCTOR_DETAILS,
   GET_ALL_DOCTORS,
   ERROR_GET_ALL_DOCTORS,
+  CREATE_DOCTOR,
+  ERROR_CREATE_DOCTOR,
 } from "../actions/types";
 
 interface AuthState {
@@ -23,7 +25,9 @@ type AuthAction =
   | { type: typeof GET_DOCTOR_DETAILS; payload: any }
   | { type: typeof ERROR_DOCTOR_DETAILS; payload: any }
   | { type: typeof GET_ALL_DOCTORS; payload: any }
-  | { type: typeof ERROR_GET_ALL_DOCTORS; payload: any };
+  | { type: typeof ERROR_GET_ALL_DOCTORS; payload: any }
+  | { type: typeof CREATE_DOCTOR; payload: any }
+  | { type: typeof ERROR_CREATE_DOCTOR; payload: any };
 
 export default function formReducer(
   state: AuthState = initialState,
@@ -37,13 +41,6 @@ export default function formReducer(
         data: action.payload,
         message: "doctor details fetched successfully",
       };
-    case ERROR_DOCTOR_DETAILS:
-      return {
-        ...state,
-        loading: false,
-        data: action.payload,
-        message: "error fetching doctor details",
-      };
     case GET_ALL_DOCTORS:
       return {
         ...state,
@@ -51,12 +48,12 @@ export default function formReducer(
         data: action.payload,
         message: "All doctor details fetched successfully",
       };
-    case ERROR_GET_ALL_DOCTORS:
+    case CREATE_DOCTOR:
       return {
         ...state,
         loading: false,
         data: action.payload,
-        message: "error fetching all doctors details",
+        message: "new doctor account created",
       };
     default:
       return state;

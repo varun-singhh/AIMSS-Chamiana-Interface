@@ -9,6 +9,7 @@ import {
   ListItem,
   ListItemText,
   ListItemIcon,
+  CircularProgress, // Import CircularProgress for the loader
 } from "@mui/material";
 import { IconShield, IconShieldCheck } from "@tabler/icons-react";
 import PageContainer from "../../src/components/container/PageContainer";
@@ -37,7 +38,6 @@ const ProfileAvatar = styled(Avatar)(({ theme }) => ({
   marginLeft: theme.spacing(5),
   marginTop: theme.spacing(15),
   position: "absolute",
-  zIndex: theme.zIndex.tooltip + 1,
   border: `5px solid white`,
 }));
 
@@ -46,7 +46,6 @@ const VerificationStatus = styled(Paper)(({ theme }) => ({
   marginLeft: theme.spacing(7),
   marginTop: theme.spacing(7),
   position: "absolute",
-  zIndex: theme.zIndex.tooltip + 1,
 }));
 
 const StatusIcon = styled("div")(({ theme, status }) => ({
@@ -62,12 +61,24 @@ const MyProfilePage = () => {
   const rootState = useSelector((state: RootState) => state?.auth?.data?.user);
   const userState = useSelector((state: RootState) => state?.user);
 
+  const [loadingProfessionalDetails, setLoadingProfessionalDetails] =
+    useState<boolean>(true);
+  const [loadingPersonalDetails, setLoadingPersonalDetails] =
+    useState<boolean>(true);
+
   useEffect(() => {
     if (state?.id > 0) {
       dispatch(getDoctorDetails(state?.id));
     }
     setState(rootState);
   }, []);
+
+  useEffect(() => {
+    if (userState?.data) {
+      setLoadingProfessionalDetails(false);
+      setLoadingPersonalDetails(false);
+    }
+  }, [userState]);
 
   return (
     <PageContainer title="My Profile" description="this is profile page">
@@ -166,88 +177,120 @@ const MyProfilePage = () => {
               </ListItem>
             </List>
           </DashboardCard>
-          <DashboardCard title="Professional Details">
-            <List>
-              <ListItem>
-                <ListItemIcon>
-                  <IconBuilding />
-                </ListItemIcon>
-                <ListItemText>
-                  Department
-                  <Typography
-                    variant="body1"
-                    color="#1976d2"
-                  >{`${userState?.data?.department}`}</Typography>
-                </ListItemText>
-              </ListItem>
-              <ListItem>
-                <ListItemIcon>
-                  <IconHealthRecognition />
-                </ListItemIcon>
-                <ListItemText>
-                  Designation
-                  <Typography
-                    variant="body1"
-                    color="#1976d2"
-                  >{`${userState?.data?.designation}`}</Typography>
-                </ListItemText>
-              </ListItem>
-              <ListItem>
-                <ListItemIcon>
-                  <IconId />
-                </ListItemIcon>
-                <ListItemText>
-                  License Number
-                  <Typography
-                    variant="body1"
-                    color="#1976d2"
-                  >{`${userState?.data?.doctor_details?.license_number}`}</Typography>
-                </ListItemText>
-              </ListItem>
-            </List>
-          </DashboardCard>
-          <DashboardCard title="Personal Details">
-            <List>
-              <ListItem>
-                <ListItemIcon>
-                  <DateRangeIcon />
-                </ListItemIcon>
-                <ListItemText>
-                  Date of Birth
-                  <Typography
-                    variant="body1"
-                    color="#1976d2"
-                  >{`${getDateFromString(
-                    userState?.data?.doctor_details?.DOB
-                  )}`}</Typography>
-                </ListItemText>
-              </ListItem>
-              <ListItem>
-                <ListItemIcon>
-                  <IconMapPin />
-                </ListItemIcon>
-                <ListItemText>
-                  Address
-                  <Typography
-                    variant="body1"
-                    color="#1976d2"
-                  >{`${userState?.data?.doctor_details?.city} ${userState?.data?.doctor_details?.district} ${userState?.data?.doctor_details?.state}, Pin: ${userState?.data?.doctor_details?.pincode}`}</Typography>
-                </ListItemText>
-              </ListItem>
-              <ListItem>
-                <ListItemIcon>
-                  <IconMan />
-                </ListItemIcon>
-                <ListItemText>
-                  Gender
-                  <Typography
-                    variant="body1"
-                    color="#1976d2"
-                  >{`${userState?.data?.doctor_details?.gender}`}</Typography>
-                </ListItemText>
-              </ListItem>
-            </List>
-          </DashboardCard>
+          {userState?.data && (
+            <DashboardCard title="Professional Details">
+              {loadingProfessionalDetails ? (
+                <CircularProgress
+                  style={{ margin: "20px auto", display: "block" }}
+                />
+              ) : (
+                <List>
+                  {userState?.data?.department && (
+                    <ListItem>
+                      <ListItemIcon>
+                        <IconBuilding />
+                      </ListItemIcon>
+                      <ListItemText>
+                        Department
+                        <Typography
+                          variant="body1"
+                          color="#1976d2"
+                        >{`${userState?.data?.department}`}</Typography>
+                      </ListItemText>
+                    </ListItem>
+                  )}
+                  {userState?.data?.designation && (
+                    <ListItem>
+                      <ListItemIcon>
+                        <IconHealthRecognition />
+                      </ListItemIcon>
+                      <ListItemText>
+                        Designation
+                        <Typography
+                          variant="body1"
+                          color="#1976d2"
+                        >{`${userState?.data?.designation}`}</Typography>
+                      </ListItemText>
+                    </ListItem>
+                  )}
+                  {userState?.data?.doctor_details?.license_number && (
+                    <ListItem>
+                      <ListItemIcon>
+                        <IconId />
+                      </ListItemIcon>
+                      <ListItemText>
+                        License Number
+                        <Typography
+                          variant="body1"
+                          color="#1976d2"
+                        >{`${userState?.data?.doctor_details?.license_number}`}</Typography>
+                      </ListItemText>
+                    </ListItem>
+                  )}
+                </List>
+              )}
+            </DashboardCard>
+          )}
+          {userState?.data && (
+            <DashboardCard title="Personal Details">
+              {loadingPersonalDetails ? (
+                <CircularProgress
+                  style={{ margin: "20px auto", display: "block" }}
+                />
+              ) : (
+                <List>
+                  {userState?.data?.doctor_details?.DOB && (
+                    <ListItem>
+                      <ListItemIcon>
+                        <DateRangeIcon />
+                      </ListItemIcon>
+                      <ListItemText>
+                        Date of Birth
+                        <Typography
+                          variant="body1"
+                          color="#1976d2"
+                        >{`${getDateFromString(
+                          userState?.data?.doctor_details?.DOB
+                        )}`}</Typography>
+                      </ListItemText>
+                    </ListItem>
+                  )}
+                  {userState?.data?.doctor_details?.block &&
+                    userState?.data?.doctor_details?.district &&
+                    userState?.data?.doctor_details?.state &&
+                    userState?.data?.doctor_details?.pincode && (
+                      <ListItem>
+                        <ListItemIcon>
+                          <IconMapPin />
+                        </ListItemIcon>
+                        <ListItemText>
+                          Address
+                          <Typography
+                            variant="body1"
+                            color="#1976d2"
+                          >{`${userState?.data?.doctor_details?.block} ${userState?.data?.doctor_details?.district} ${userState?.data?.doctor_details?.state}, Pin: ${userState?.data?.doctor_details?.pincode}`}</Typography>
+                        </ListItemText>
+                      </ListItem>
+                    )}
+
+                  {userState?.data?.doctor_details?.gender && (
+                    <ListItem>
+                      <ListItemIcon>
+                        <IconMan />
+                      </ListItemIcon>
+                      <ListItemText>
+                        Gender
+                        <Typography
+                          variant="body1"
+                          color="#1976d2"
+                        >{`${userState?.data?.doctor_details?.gender}`}</Typography>
+                      </ListItemText>
+                    </ListItem>
+                  )}
+                </List>
+              )}
+            </DashboardCard>
+          )}
         </>
       )}
     </PageContainer>

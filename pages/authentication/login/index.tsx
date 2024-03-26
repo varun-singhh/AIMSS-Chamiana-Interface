@@ -1,5 +1,5 @@
 import Link from "next/link";
-import type { ReactElement } from "react";
+import { ReactElement, useEffect } from "react";
 import {
   Grid,
   Box,
@@ -10,6 +10,9 @@ import {
   useTheme,
 } from "@mui/material";
 import BlankLayout from "../../../src/layouts/blank/BlankLayout";
+import { useSelector } from "react-redux";
+import { RootState } from "../../../store";
+import { useRouter } from "next/router";
 
 // components
 import PageContainer from "../../../src/components/container/PageContainer";
@@ -18,7 +21,15 @@ import AuthLogin from "../auth/AuthLogin";
 
 const Login2 = () => {
   const theme = useTheme();
+  const router = useRouter();
+  const auth = useSelector((state: RootState) => state?.auth);
   const isLargeScreen = useMediaQuery(theme.breakpoints.up("lg")); // Check for large screens (lg breakpoint)
+
+  useEffect(() => {
+    if (auth?.loggedIn) {
+      router.push("/");
+    }
+  }, []);
 
   return (
     <PageContainer title="Login" description="this is Login page">

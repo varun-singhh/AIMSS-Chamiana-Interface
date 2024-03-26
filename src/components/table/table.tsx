@@ -7,6 +7,7 @@ import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TablePagination from "@mui/material/TablePagination";
 import TableRow from "@mui/material/TableRow";
+import { Typography } from "@mui/material";
 
 interface Column {
   id: "id" | "name" | "email" | "phone" | "department" | "designation";
@@ -57,7 +58,7 @@ interface Data {
   density: number;
 }
 
-export default function StickyHeadTable({ rows }: any) {
+export default function StickyHeadTable({ rows, category }: any) {
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(10);
 
@@ -73,7 +74,19 @@ export default function StickyHeadTable({ rows }: any) {
   };
 
   return (
-    <Paper sx={{ width: "100%", overflow: "hidden" }}>
+    <Paper
+      sx={{
+        width: "100%",
+        overflow: "hidden",
+        marginTop: "2rem",
+        padding: "1rem",
+      }}
+      elevation={9}
+      variant={undefined}
+    >
+      <Typography py={2} fontSize={14}>
+        List of all {category}
+      </Typography>
       <TableContainer sx={{ maxHeight: 440 }}>
         <Table stickyHeader aria-label="sticky table">
           <TableHead>
@@ -82,7 +95,11 @@ export default function StickyHeadTable({ rows }: any) {
                 <TableCell
                   key={column.id}
                   align={column.align}
-                  style={{ minWidth: column.minWidth }}
+                  style={{
+                    minWidth: column.minWidth,
+                    backgroundColor: "#ececec",
+                    boxShadow: "initial",
+                  }}
                 >
                   {column.label}
                 </TableCell>

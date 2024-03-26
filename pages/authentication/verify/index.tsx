@@ -17,9 +17,14 @@ import Logo from "../../../src/layouts/full/shared/logo/Logo";
 import BlankLayout from "../../../src/layouts/blank/BlankLayout";
 import OtpVerification from "../auth/AuthVerify";
 import Cookies from "js-cookie";
+import { useSelector } from "react-redux";
+import { RootState } from "../../../store";
+import { useRouter } from "next/router";
 
 const Verify = () => {
   const theme = useTheme();
+  const router = useRouter();
+  const auth = useSelector((state: RootState) => state?.auth);
   const isLargeScreen = useMediaQuery(theme.breakpoints.up("lg")); // Check for large screens (lg breakpoint)
   const [open, setOpen] = useState(
     Cookies.get("tc") ? Boolean(Cookies.get("tc")) : true
@@ -39,6 +44,12 @@ const Verify = () => {
     Cookies.get("state");
     window.location.href = "/authentication/register";
   };
+
+  useEffect(() => {
+    if (auth?.loggedIn) {
+      router.push("/");
+    }
+  }, []);
 
   return (
     <PageContainer title="Register" description="this is Register page">

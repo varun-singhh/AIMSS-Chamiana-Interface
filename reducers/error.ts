@@ -8,7 +8,10 @@ import {
   REGISTER_USER_FAILED,
   REQUEST_OTP_FAILED,
   USER_LOGIN_FAILED,
-  CLEAR_STATE,
+  ERROR_DOCTOR_DETAILS,
+  ERROR_GET_ALL_DOCTORS,
+  ERROR_CREATE_DOCTOR,
+  CLEAR_ERR_STATE,
 } from "../actions/types";
 
 interface ErrorState {
@@ -81,7 +84,28 @@ const errorReducer: Reducer<ErrorState> = (state = initialState, action) => {
         data: action.payload,
         message: "failed to login",
       };
-    case CLEAR_STATE:
+    case ERROR_DOCTOR_DETAILS:
+      return {
+        ...state,
+        loading: false,
+        data: action.payload,
+        message: "error fetching doctor details",
+      };
+    case ERROR_CREATE_DOCTOR:
+      return {
+        ...state,
+        loading: false,
+        data: action.payload,
+        message: "error creating new doctor account",
+      };
+    case ERROR_GET_ALL_DOCTORS:
+      return {
+        ...state,
+        loading: false,
+        data: action.payload,
+        message: "error fetching all doctors details",
+      };
+    case CLEAR_ERR_STATE:
       return {
         ...state,
         loading: false,

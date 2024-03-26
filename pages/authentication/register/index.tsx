@@ -1,4 +1,4 @@
-import type { ReactElement } from "react";
+import { ReactElement, useEffect } from "react";
 import {
   Grid,
   Box,
@@ -13,10 +13,21 @@ import PageContainer from "../../../src/components/container/PageContainer";
 import Logo from "../../../src/layouts/full/shared/logo/Logo";
 import AuthRegister from "../auth/AuthRegister";
 import BlankLayout from "../../../src/layouts/blank/BlankLayout";
+import { useSelector } from "react-redux";
+import { RootState } from "../../../store";
+import { useRouter } from "next/router";
 
 const Register2 = () => {
+  const router = useRouter();
+  const auth = useSelector((state: RootState) => state?.auth);
   const theme = useTheme();
   const isLargeScreen = useMediaQuery(theme.breakpoints.up("lg")); // Check for large screens (lg breakpoint)
+
+  useEffect(() => {
+    if (auth?.loggedIn) {
+      router.push("/");
+    }
+  }, []);
 
   return (
     <PageContainer title="Register" description="this is Register page">
