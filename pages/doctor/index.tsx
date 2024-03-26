@@ -9,7 +9,6 @@ import {
   DialogTitle,
   DialogContent,
   DialogActions,
-  InputLabel,
   Select,
   MenuItem,
   CircularProgress, // Import CircularProgress for the loader
@@ -48,7 +47,6 @@ const FloatingButtonContainer = styled("div")({
 });
 
 const SamplePage = () => {
-  const router = useRouter();
   const dispatch: AppDispatch = useDispatch();
   const pageLoading = useSelector((state: RootState) => state?.user?.loading);
   const authState = useSelector((state: RootState) => state?.auth?.loggedIn);
@@ -180,8 +178,14 @@ const SamplePage = () => {
   }, [searchNameQuery, searchPhoneQuery]);
 
   useEffect(() => {
-    setPageloader(pageLoading);
+    if (errState?.length > 0) {
+      setPageloader(false);
+    } else {
+      setPageloader(pageLoading);
+    }
   }, [pageLoading]);
+
+  console.log(errState);
 
   return (
     <>
