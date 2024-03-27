@@ -8,6 +8,7 @@ import TableHead from "@mui/material/TableHead";
 import TablePagination from "@mui/material/TablePagination";
 import TableRow from "@mui/material/TableRow";
 import { Card, Typography } from "@mui/material";
+import { blue } from "@mui/material/colors";
 
 interface Column {
   id:
@@ -201,12 +202,24 @@ export default function StickyHeadTable({ rows, category }: any) {
                                       {row["doctor_contact"][column.id]}
                                     </TableCell>
                                   )}
-                                  {(column.id === "id" ||
-                                    column.id === "department" ||
+                                  {(column.id === "department" ||
                                     column.id === "designation") && (
                                     <TableCell
                                       key={column.id}
                                       align={column.align}
+                                    >
+                                      {value}
+                                    </TableCell>
+                                  )}
+                                  {column.id === "id" && (
+                                    <TableCell
+                                      key={column.id}
+                                      align={column.align}
+                                      sx={{
+                                        color: "#5D87FF",
+                                        textDecoration: "underline",
+                                        cursor: "pointer",
+                                      }}
                                     >
                                       {value}
                                     </TableCell>
@@ -248,6 +261,11 @@ export default function StickyHeadTable({ rows, category }: any) {
                                     <TableCell
                                       key={column.id}
                                       align={column.align}
+                                      sx={{
+                                        color: "#5D87FF",
+                                        textDecoration: "underline",
+                                        cursor: "pointer",
+                                      }}
                                     >
                                       {value}
                                     </TableCell>

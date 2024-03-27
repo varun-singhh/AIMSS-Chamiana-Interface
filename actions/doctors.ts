@@ -34,44 +34,56 @@ export const createNewDoctor = (data: any) => async (dispatch: Dispatch) => {
   }
 };
 
-export const getDoctorDetails = (id: string) => async (dispatch: Dispatch) => {
-  try {
-    dispatch({ type: LOADING });
+export const getDoctorDetails =
+  (id: string, query: string) => async (dispatch: Dispatch) => {
+    try {
+      dispatch({ type: LOADING });
 
-    const res = await axios.get(userServiceBaseURL + "doctor?id=" + id, {
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
-    dispatch({
-      type: GET_DOCTOR_DETAILS,
-      payload: res.data?.data,
-    });
-  } catch (error: any) {
-    dispatch({
-      type: ERROR_DOCTOR_DETAILS,
-      payload: error.response?.data,
-    });
-  }
-};
+      const res = await axios.get(
+        `${userServiceBaseURL}doctor/${id}?${query}`,
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      dispatch({
+        type: GET_DOCTOR_DETAILS,
+        payload: res.data?.data,
+      });
+    } catch (error: any) {
+      dispatch({
+        type: ERROR_DOCTOR_DETAILS,
+        payload: error.response?.data,
+      });
+    }
+  };
 
-export const getAllDoctorsDetails = () => async (dispatch: Dispatch) => {
-  try {
-    dispatch({ type: LOADING });
+export const getAllDoctorsDetails =
+  (query: string) => async (dispatch: Dispatch) => {
+    try {
+      dispatch({ type: LOADING });
 
-    const res = await axios.get(userServiceBaseURL + "doctors", {
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
-    dispatch({
-      type: GET_ALL_DOCTORS,
-      payload: res.data?.data,
-    });
-  } catch (error: any) {
-    dispatch({
-      type: ERROR_GET_ALL_DOCTORS,
-      payload: error.response?.data,
-    });
-  }
-};
+      var url;
+      if (query !== "") {
+        url = `${userServiceBaseURL}doctors?${query}`;
+      } else {
+        url = `${userServiceBaseURL}doctors`;
+      }
+
+      const res = await axios.get(url, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      dispatch({
+        type: GET_ALL_DOCTORS,
+        payload: res.data?.data,
+      });
+    } catch (error: any) {
+      dispatch({
+        type: ERROR_GET_ALL_DOCTORS,
+        payload: error.response?.data,
+      });
+    }
+  };

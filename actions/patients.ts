@@ -38,44 +38,56 @@ export const createNewPatient = (data: any) => async (dispatch: Dispatch) => {
   }
 };
 
-export const getPatientDetails = (id: string) => async (dispatch: Dispatch) => {
-  try {
-    dispatch({ type: LOADING });
+export const getPatientDetails =
+  (id: string, query: string) => async (dispatch: Dispatch) => {
+    try {
+      dispatch({ type: LOADING });
 
-    const res = await axios.get(userServiceBaseURL + "patient?id=" + id, {
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
-    dispatch({
-      type: GET_PATIENT_DETAILS,
-      payload: res.data?.data,
-    });
-  } catch (error: any) {
-    dispatch({
-      type: ERROR_PATIENT_DETAILS,
-      payload: error.response?.data,
-    });
-  }
-};
+      const res = await axios.get(
+        `${userServiceBaseURL}patient/${id}?${query}`,
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      dispatch({
+        type: GET_PATIENT_DETAILS,
+        payload: res.data?.data,
+      });
+    } catch (error: any) {
+      dispatch({
+        type: ERROR_PATIENT_DETAILS,
+        payload: error.response?.data,
+      });
+    }
+  };
 
-export const getAllPatientsDetails = () => async (dispatch: Dispatch) => {
-  try {
-    dispatch({ type: LOADING });
+export const getAllPatientsDetails =
+  (query: any) => async (dispatch: Dispatch) => {
+    try {
+      dispatch({ type: LOADING });
 
-    const res = await axios.get(userServiceBaseURL + "patients", {
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
-    dispatch({
-      type: GET_ALL_PATIENTS,
-      payload: res.data?.data,
-    });
-  } catch (error: any) {
-    dispatch({
-      type: ERROR_GET_ALL_PATIENTS,
-      payload: error.response?.data,
-    });
-  }
-};
+      var url;
+      if (query !== "") {
+        url = `${userServiceBaseURL}patients?${query}`;
+      } else {
+        url = `${userServiceBaseURL}patients`;
+      }
+
+      const res = await axios.get(url, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      dispatch({
+        type: GET_ALL_PATIENTS,
+        payload: res.data?.data,
+      });
+    } catch (error: any) {
+      dispatch({
+        type: ERROR_GET_ALL_PATIENTS,
+        payload: error.response?.data,
+      });
+    }
+  };

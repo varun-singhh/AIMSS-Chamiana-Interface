@@ -1,97 +1,108 @@
 import {
-  IconAperture, IconCopy, IconLayoutDashboard,IconReceiptRefund,IconStethoscope, IconUserCircle, IconDisabled,IconListDetails, IconLogin, IconMoodHappy, IconSettings, IconUserPlus
-} from '@tabler/icons-react';
+  IconAperture,
+  IconCopy,
+  IconLayoutDashboard,
+  IconReceiptRefund,
+  IconStethoscope,
+  IconUserCircle,
+  IconDisabled,
+  IconListDetails,
+  IconLogin,
+  IconMoodHappy,
+  IconSettings,
+  IconUserPlus,
+} from "@tabler/icons-react";
 
-import { uniqueId } from 'lodash';
+import { uniqueId } from "lodash";
 
 const Menuitems = [
   {
     navlabel: true,
-    subheader: 'Home',
+    subheader: "Home",
   },
   {
     id: uniqueId(),
-    title: 'Dashboard',
+    title: "Dashboard",
     icon: IconLayoutDashboard,
-    href: '/',
+    href: "/",
   },
   {
     id: uniqueId(),
-    title: 'Patient',
+    title: "Patient",
     icon: IconDisabled,
-    href: '/patient',
+    href: "/patient",
   },
   {
     id: uniqueId(),
-    title: 'Doctor',
+    title: "Doctor",
     icon: IconStethoscope,
-    href: '/doctor',
+    href: "/doctor",
   },
   {
     id: uniqueId(),
-    title: 'Case Forms',
+    title: "Forms",
     icon: IconListDetails,
-    href: '/case',
+    href: "/case",
   },
+  // {
+  //   id: uniqueId(),
+  //   title: "Followup Forms",
+  //   icon: IconReceiptRefund,
+  //   href: "/followup",
+  // },
   {
     id: uniqueId(),
-    title: 'Followup Forms',
-    icon: IconReceiptRefund,
-    href: '/followup',
-  },
-    {
-    id: uniqueId(),
-    title: 'Profile',
+    title: "Profile",
     icon: IconUserCircle,
-    href: '/profile',
+    href: "/profile",
   },
   {
     navlabel: true,
-    subheader: 'Settings',
+    subheader: "Settings",
   },
   {
     id: uniqueId(),
-    title: 'Typography',
+    title: "Typography",
     icon: IconSettings,
-    href: '/utilities/typography',
+    href: "/utilities/typography",
   },
   {
     id: uniqueId(),
-    title: 'Shadow',
+    title: "Shadow",
     icon: IconCopy,
-    href: '/utilities/shadow',
+    href: "/utilities/shadow",
   },
   {
     navlabel: true,
-    subheader: 'Auth',
+    subheader: "Auth",
   },
   {
     id: uniqueId(),
-    title: 'Login',
+    title: "Login",
     icon: IconLogin,
-    href: '/authentication/login',
+    href: "/authentication/login",
   },
   {
     id: uniqueId(),
-    title: 'Register',
+    title: "Register",
     icon: IconUserPlus,
-    href: '/authentication/register',
+    href: "/authentication/register",
   },
   {
     navlabel: true,
-    subheader: 'Extra',
+    subheader: "Extra",
   },
   {
     id: uniqueId(),
-    title: 'Icons',
+    title: "Icons",
     icon: IconMoodHappy,
-    href: '/icons',
+    href: "/icons",
   },
   {
     id: uniqueId(),
-    title: 'Sample Page',
+    title: "Sample Page",
     icon: IconAperture,
-    href: '/sample-page',
+    href: "/sample-page",
   },
 ];
 

@@ -13,6 +13,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { RootState, AppDispatch } from "../../../store";
 import { createForm } from "../../../actions/forms";
 import { getAllDoctorsDetails } from "../../../actions/doctors";
+import SearchDialog from "../../../src/components/dialog";
 
 const FloatingButtonContainer = styled("div")({
   position: "fixed",
@@ -952,14 +953,7 @@ const ACSCaseFormPage = () => {
     }, 4000);
   };
 
-  useEffect(() => {
-    if (userState !== undefined && authState) {
-      dispatch(getAllDoctorsDetails());
-      acsDoctorAssigned[0]["children"][0]["menuItem"] = userState?.data?.map(
-        (res) => res?.doctor_details?.name
-      );
-    }
-  }, []);
+  const handleDialogClose = () => {};
 
   return (
     <>
@@ -982,6 +976,7 @@ const ACSCaseFormPage = () => {
       >
         <DashboardCard title="ACS Case Form">
           <>
+            <SearchDialog open={true} onClose={handleDialogClose} />
             {/* <DynamicForm formData={formData} /> */}
             <NestedAccordion data={acsFormData} />
           </>

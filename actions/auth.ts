@@ -9,7 +9,7 @@ import {
   REQUEST_OTP,
   REQUEST_OTP_FAILED,
   LOGOUT,
-  CLEAR_STATE,
+  CLEAR_ERR_STATE,
 } from "./types";
 import { Dispatch } from "redux";
 import { deleteState } from "../localstorage";
@@ -44,7 +44,7 @@ export const register = (data: any) => async (dispatch: Dispatch) => {
         "Content-Type": "application/json",
       },
     });
-    dispatch({ type: CLEAR_STATE });
+    dispatch({ type: CLEAR_ERR_STATE });
     dispatch({
       type: REGISTER_USER,
       payload: res.data?.data,

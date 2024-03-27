@@ -153,7 +153,7 @@ const SamplePage = () => {
 
   useEffect(() => {
     if (authState) {
-      dispatch(getAllPatientsDetails());
+      dispatch(getAllPatientsDetails(""));
     }
   }, [authState, dispatch]);
 
@@ -166,7 +166,7 @@ const SamplePage = () => {
 
   useEffect(() => {
     if (errState === undefined || errState?.length == 0) {
-      dispatch(getAllPatientsDetails());
+      dispatch(getAllPatientsDetails(""));
       // Close the dialog after submission
       setIsNewPatientDialogOpen(false);
       // Clear newPatientDetails state
@@ -185,12 +185,10 @@ const SamplePage = () => {
   }, [searchNameQuery, searchPhoneQuery]);
 
   useEffect(() => {
-    if (errState?.length > 0) {
+    setTimeout(() => {
       setPageloader(false);
-    } else {
-      setPageloader(pageLoading);
-    }
-  }, [pageLoading]);
+    }, 1500);
+  }, [pageloader]);
 
   return (
     <>

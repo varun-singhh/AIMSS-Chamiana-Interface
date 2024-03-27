@@ -22,7 +22,6 @@ import { useSelector, useDispatch } from "react-redux";
 import { AppDispatch, RootState } from "../../store";
 import { createNewDoctor, getAllDoctorsDetails } from "../../actions/doctors";
 import StickyHeadTable from "../../src/components/table/table";
-import { useRouter } from "next/router";
 
 interface doctor {
   name: string;
@@ -146,7 +145,7 @@ const SamplePage = () => {
 
   useEffect(() => {
     if (authState) {
-      dispatch(getAllDoctorsDetails());
+      dispatch(getAllDoctorsDetails(""));
     }
   }, [authState, dispatch]);
 
@@ -159,7 +158,7 @@ const SamplePage = () => {
 
   useEffect(() => {
     if (errState === undefined || errState?.length == 0) {
-      dispatch(getAllDoctorsDetails());
+      dispatch(getAllDoctorsDetails(""));
       // Close the dialog after submission
       setIsNewdoctorDialogOpen(false);
       // Clear newdoctorDetails state
@@ -178,14 +177,10 @@ const SamplePage = () => {
   }, [searchNameQuery, searchPhoneQuery]);
 
   useEffect(() => {
-    if (errState?.length > 0) {
+    setTimeout(() => {
       setPageloader(false);
-    } else {
-      setPageloader(pageLoading);
-    }
-  }, [pageLoading]);
-
-  console.log(errState);
+    }, 1500);
+  }, [pageloader]);
 
   return (
     <>
