@@ -1,15 +1,15 @@
 import { useEffect, type ReactElement } from "react";
 import { Grid, Box } from "@mui/material";
-import PageContainer from "../src/components/container/PageContainer";
+import PageContainer from "../../src/components/container/PageContainer";
 
 // components
-import SalesOverview from "../src/components/dashboard/SalesOverview";
-import YearlyBreakup from "../src/components/dashboard/YearlyBreakup";
-import RecentTransactions from "../src/components/dashboard/RecentTransactions";
-import ProductPerformance from "../src/components/dashboard/ProductPerformance";
-import Blog from "../src/components/dashboard/Blog";
-import MonthlyEarnings from "../src/components/dashboard/MonthlyEarnings";
-import FullLayout from "../src/layouts/full/FullLayout";
+import SalesOverview from "../../src/components/dashboard/SalesOverview";
+import YearlyBreakup from "../../src/components/dashboard/YearlyBreakup";
+import RecentTransactions from "../../src/components/dashboard/RecentTransactions";
+import ProductPerformance from "../../src/components/dashboard/ProductPerformance";
+import Blog from "../../src/components/dashboard/Blog";
+import MonthlyEarnings from "../../src/components/dashboard/MonthlyEarnings";
+import FullLayout from "../../src/layouts/full/FullLayout";
 
 export default function Home() {
   return (

@@ -23,7 +23,8 @@
     "pages/sample-page/index.tsz",
     "pages/profile/index.tsz",
     "pages/profile/index.js",
-    "src/components/table/table.js"
+    "src/components/table/table.js",
+    "src/components/popup/index.tsz"
   ],
   "exclude": ["node_modules"]
 }
