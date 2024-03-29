@@ -157,19 +157,9 @@ const SearchDialog = ({ open, onClose }: any) => {
                   spacing={2}
                   sx={{
                     display: "flex",
-                    justifyContent: "right",
+                    justifyContent: "space-between",
                   }}
                 >
-                  <Grid item>
-                    <Button
-                      variant="outlined"
-                      onClick={() => {
-                        router.push("/case");
-                      }}
-                    >
-                      New Form
-                    </Button>
-                  </Grid>
                   <Grid item>
                     <Button variant="contained" onClick={handlePatientSearch}>
                       Search Patient
@@ -280,21 +270,8 @@ const SearchDialog = ({ open, onClose }: any) => {
                 <Grid
                   container
                   spacing={2}
-                  sx={{
-                    display: "flex",
-                    justifyContent: "right",
-                  }}
+                  sx={{ display: "flex", justifyContent: "space-between" }}
                 >
-                  <Grid item>
-                    <Button
-                      variant="outlined"
-                      onClick={() => {
-                        router.push("/case");
-                      }}
-                    >
-                      New Form
-                    </Button>
-                  </Grid>
                   <Grid item>
                     <Button variant="contained" onClick={handleDoctorSearch}>
                       Search Doctor
@@ -374,6 +351,15 @@ const SearchDialog = ({ open, onClose }: any) => {
           )}
           {/* Search Results Table */}
         </Grid>
+        <Button
+          fullWidth
+          variant="outlined"
+          onClick={() => {
+            router.push("/case");
+          }}
+        >
+          New Form
+        </Button>
       </DialogContent>
     </Dialog>
   );
