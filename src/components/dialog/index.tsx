@@ -22,13 +22,10 @@ import { useSelector, useDispatch } from "react-redux";
 import { AppDispatch, RootState } from "../../../store";
 import { getAllPatientsDetails } from "../../../actions/patients";
 import { getAllDoctorsDetails } from "../../../actions/doctors";
+import { useRouter } from "next/router";
 
-interface DialogProps {
-  open: boolean;
-  onClose: () => void;
-}
-
-const SearchDialog: React.FC<DialogProps> = ({ open, onClose }) => {
+const SearchDialog = ({ open, onClose }: any) => {
+  const router = useRouter();
   const userState = useSelector((state: RootState) => state?.user?.data?.data);
   const dispatch: AppDispatch = useDispatch();
   const [dialogOpen, setDialogOpen] = useState(open);
@@ -38,7 +35,6 @@ const SearchDialog: React.FC<DialogProps> = ({ open, onClose }) => {
   const [doctortName, setDoctortName] = useState<string>("");
   const [doctorPhone, setDoctorPhone] = useState<string>("");
   const [doctorLicenseNumber, setDoctorLicenseNumber] = useState<string>("");
-
   const [searchPatientResults, setSearchPatientResults] = useState([]);
   const [searchDoctorResults, setSearchDoctorResults] = useState([]);
   const [patientLoading, setPatientLoading] = useState<boolean>(false);
@@ -90,8 +86,6 @@ const SearchDialog: React.FC<DialogProps> = ({ open, onClose }) => {
       querystring += `phone=${doctorPhone}&`;
     }
 
-    console.log(querystring);
-
     dispatch(getAllDoctorsDetails(querystring));
 
     // Implement your search logic here
@@ -114,10 +108,10 @@ const SearchDialog: React.FC<DialogProps> = ({ open, onClose }) => {
 
   useEffect(() => {
     if (selectedDoctor !== null && selectedPatient !== null) {
-      console.log(selectedPatient, selectedDoctor);
+      onClose({ patient: selectedPatient, doctor: selectedDoctor });
       setDialogOpen(false);
     }
-  }, [selectedDoctor]);
+  }, [selectedPatient, selectedDoctor]);
 
   return (
     <Dialog open={dialogOpen} onClose={onClose}>
@@ -132,6 +126,7 @@ const SearchDialog: React.FC<DialogProps> = ({ open, onClose }) => {
                   Select Patient for which form is being filled
                 </Typography>
               </Grid>
+
               <Grid item xs={4}>
                 <TextField
                   label="Name"
@@ -157,9 +152,31 @@ const SearchDialog: React.FC<DialogProps> = ({ open, onClose }) => {
                 />
               </Grid>
               <Grid item xs={12}>
-                <Button variant="contained" onClick={handlePatientSearch}>
-                  Search
-                </Button>
+                <Grid
+                  container
+                  spacing={2}
+                  sx={{
+                    display: "flex",
+                    justifyContent: "right",
+                  }}
+                >
+                  <Grid item>
+                    <Button
+                      variant="outlined"
+                      onClick={() => {
+                        router.push("/case");
+                      }}
+                    >
+                      New Form
+                    </Button>
+                  </Grid>
+                  <Grid item>
+                    <Button variant="contained" onClick={handlePatientSearch}>
+                      Search Patient
+                    </Button>
+                  </Grid>
+                </Grid>
+
                 <Grid item xs={12} mt={3}>
                   {patientLoading ? (
                     <CircularProgress
@@ -187,10 +204,16 @@ const SearchDialog: React.FC<DialogProps> = ({ open, onClose }) => {
                           <TableBody>
                             {showpatientData &&
                               searchPatientResults?.map((result, index) => (
-                                <TableRow key={index}>
-                                  <TableCell>
+                                <TableRow key={index} hover role="checkbox">
+                                  <TableCell
+                                    onClick={() => {
+                                      setSelectedPatient(
+                                        searchPatientResults[index]
+                                      );
+                                    }}
+                                  >
                                     <Radio
-                                      onChange={() => {
+                                      onClick={() => {
                                         setSelectedPatient(
                                           searchPatientResults[index]
                                         );
@@ -254,9 +277,30 @@ const SearchDialog: React.FC<DialogProps> = ({ open, onClose }) => {
                 />
               </Grid>
               <Grid item xs={12}>
-                <Button variant="contained" onClick={handleDoctorSearch}>
-                  Search
-                </Button>
+                <Grid
+                  container
+                  spacing={2}
+                  sx={{
+                    display: "flex",
+                    justifyContent: "right",
+                  }}
+                >
+                  <Grid item>
+                    <Button
+                      variant="outlined"
+                      onClick={() => {
+                        router.push("/case");
+                      }}
+                    >
+                      New Form
+                    </Button>
+                  </Grid>
+                  <Grid item>
+                    <Button variant="contained" onClick={handleDoctorSearch}>
+                      Search Doctor
+                    </Button>
+                  </Grid>
+                </Grid>
                 <Grid item xs={12} mt={3}>
                   {docLoading ? (
                     <CircularProgress
@@ -269,6 +313,7 @@ const SearchDialog: React.FC<DialogProps> = ({ open, onClose }) => {
                           {searchDoctorResults.length > 0 && (
                             <TableHead>
                               <TableRow
+                                hover
                                 style={{
                                   backgroundColor: "#ececec",
                                   boxShadow: "initial",
@@ -284,9 +329,18 @@ const SearchDialog: React.FC<DialogProps> = ({ open, onClose }) => {
                           <TableBody>
                             {showDoctorData &&
                               searchDoctorResults?.map((result, index) => (
-                                <TableRow key={index}>
+                                <TableRow
+                                  key={index}
+                                  hover
+                                  role="checkbox"
+                                  onClick={() => {
+                                    setSelectedDoctor(
+                                      searchDoctorResults[index]
+                                    );
+                                  }}
+                                >
                                   <Radio
-                                    onChange={() => {
+                                    onClick={() => {
                                       setSelectedDoctor(
                                         searchDoctorResults[index]
                                       );

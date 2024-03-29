@@ -89,7 +89,7 @@ const AuthLogin = ({ title, subtitle, subtext }: loginType) => {
   useEffect(() => {
     if (auth?.loggedIn) {
       Cookies.set("token", auth?.data?.token);
-      router.push("/");
+      router.push("/case");
     }
   }, [auth?.loggedIn]);
 

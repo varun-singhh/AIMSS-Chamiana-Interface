@@ -47,7 +47,7 @@ const Verify = () => {
 
   useEffect(() => {
     if (auth?.loggedIn) {
-      router.push("/");
+      router.push("/case");
     }
   }, []);
 

@@ -60,6 +60,8 @@ export const createForm =
     data: any
   ) =>
   async (dispatch: Dispatch) => {
+    filler_id = filler_id + "";
+
     try {
       dispatch({ type: LOADING });
 

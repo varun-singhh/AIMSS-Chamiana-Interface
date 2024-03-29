@@ -51,12 +51,6 @@ const errorReducer: Reducer<ErrorState> = (state = initialState, action) => {
         data: action.payload,
         message: "failed to upload form",
       };
-    case ERROR_CREATING_FORM:
-      return {
-        ...state,
-        loading: false,
-        message: "failed to upload form, please try again",
-      };
     case ERROR_DELETING_FORM:
       return {
         ...state,

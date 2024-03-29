@@ -3,6 +3,7 @@ import {
   CREATING_FORM,
   LOADING,
   DELETING_FORM,
+  ERROR_CREATING_FORM,
 } from "../actions/types";
 
 interface FormState {
@@ -21,13 +22,20 @@ type FormAction =
   | { type: typeof LOADING }
   | { type: typeof FETCHING_FORM_FROM_SERVER; payload: any }
   | { type: typeof CREATING_FORM; payload: any }
-  | { type: typeof DELETING_FORM; payload: any };
+  | { type: typeof DELETING_FORM; payload: any }
+  | { type: typeof ERROR_CREATING_FORM; payload: any };
 
 export default function formReducer(
   state: FormState = initialState,
   action: FormAction
 ): FormState {
   switch (action.type) {
+    case ERROR_CREATING_FORM:
+      return {
+        ...state,
+        loading: false,
+        message: "failed to upload form, please try again",
+      };
     case FETCHING_FORM_FROM_SERVER:
       return {
         ...state,

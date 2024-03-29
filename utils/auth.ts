@@ -2,7 +2,7 @@ import axios from "axios";
 import ProgressBar from "@badrap/bar-of-progress";
 import Cookies from "js-cookie";
 
-export const baseURL = "http://localhost:8000/api/";
+export const baseURL = "http://localhost:8001/api/";
 
 export const authBaseURL = "http://localhost:2222/api/";
 

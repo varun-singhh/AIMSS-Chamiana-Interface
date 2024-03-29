@@ -27,7 +27,7 @@ const Login2 = () => {
 
   useEffect(() => {
     if (auth?.loggedIn) {
-      router.push("/");
+      router.push("/case");
     }
   }, []);
 

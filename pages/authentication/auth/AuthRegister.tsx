@@ -64,7 +64,7 @@ const AuthRegister = ({ title, subtitle, subtext }: registerType) => {
     }
 
     if (auth?.loggedIn) {
-      router.push("/");
+      router.push("/case");
     }
 
     setLoading(false);

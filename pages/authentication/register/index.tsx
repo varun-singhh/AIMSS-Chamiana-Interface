@@ -25,7 +25,7 @@ const Register2 = () => {
 
   useEffect(() => {
     if (auth?.loggedIn) {
-      router.push("/");
+      router.push("/case");
     }
   }, []);
 

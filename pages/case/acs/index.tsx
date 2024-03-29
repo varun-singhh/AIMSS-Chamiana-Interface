@@ -14,6 +14,11 @@ import { RootState, AppDispatch } from "../../../store";
 import { createForm } from "../../../actions/forms";
 import { getAllDoctorsDetails } from "../../../actions/doctors";
 import SearchDialog from "../../../src/components/dialog";
+import { random } from "lodash";
+import { randomBytes, randomInt } from "crypto";
+import { randomNumber } from "../../../utils/factorty";
+import Popup from "../../../src/components/popup";
+import { useRouter } from "next/router";
 
 const FloatingButtonContainer = styled("div")({
   position: "fixed",
@@ -21,48 +26,6 @@ const FloatingButtonContainer = styled("div")({
   right: "20px",
   zIndex: 1000,
 });
-
-const patientIdentificationData = [
-  {
-    title: "Patient Identification",
-    children: [
-      {
-        field: "Name",
-        type: "string",
-      },
-      {
-        field: "Block",
-        type: "string",
-      },
-      {
-        field: "SO/DO/H",
-        type: "string",
-      },
-      {
-        field: "ACS Registry Number",
-        type: "string",
-      },
-      {
-        field: "Disctrict",
-        type: "menu",
-        menuItem: [
-          "Bilaspur",
-          "Chamba",
-          "Hamirpur",
-          "Kangra",
-          "Kinnaur",
-          "Kullu",
-          "Lahaul and Spiti",
-          "Mandi",
-          "Shimla",
-          "Sirmaur",
-          "Solan",
-          "Una",
-        ],
-      },
-    ],
-  },
-];
 
 const socioDemographicData = [
   {
@@ -740,32 +703,23 @@ const timeDelayPresentataionData = [
   },
 ];
 
-const acsDoctorAssigned = [
-  {
-    title: "Doctor Assigned",
-    children: [
-      {
-        field: "Doctor Name",
-        type: "menu",
-        menuItem: [
-          "Hemorrhagic",
-          "Ischemic stroke",
-          "Heart Failure",
-          "Sudden Death",
-        ],
-      },
-    ],
-  },
-];
-
 const ACSCaseFormPage = () => {
-  const [acsData, setACSData] = useState({
-    doctor_assigned: {
-      doctor_name: "",
-      doctor_id: "",
-    },
-  });
+  const dispatch: AppDispatch = useDispatch();
+  const authState = useSelector((state: RootState) => state?.auth);
+  const formState = useSelector((state: RootState) => state?.form);
+  const [prefillData, setPrefillData] = useState({ patient: {}, doctor: {} });
+  const [acsData, setACSData] = useState({});
   const [loading, setLoading] = useState(false);
+  const [formFilled, setFormFilled] = useState(false);
+
+  const handleCloseDialog = (data: { patient: any; doctor: any }) => {
+    setPrefillData(data);
+  };
+
+  const handleGoBack = () => {
+    window.history.back(); // Go back to the previous page
+  };
+
   const handleFormDataUpdate = (data: any) => {
     setACSData((prevData) => {
       return {
@@ -776,15 +730,6 @@ const ACSCaseFormPage = () => {
   };
 
   const acsFormData = [
-    {
-      title: "Patient Identification",
-      content: (
-        <DynamicForm
-          formData={patientIdentificationData}
-          onFormDataUpdate={handleFormDataUpdate}
-        />
-      ),
-    },
     {
       title: "Socio Demographics",
       content: (
@@ -916,48 +861,79 @@ const ACSCaseFormPage = () => {
         />
       ),
     },
-    {
-      title: "Doctor Assigned",
-      content: (
-        <DynamicForm
-          formData={acsDoctorAssigned}
-          onFormDataUpdate={handleFormDataUpdate}
-        />
-      ),
-    },
   ];
 
-  const handleGoBack = () => {
-    window.history.back(); // Go back to the previous page
-  };
-
-  const authState = useSelector((state: RootState) => state?.auth?.loggedIn);
-  const userState = useSelector((state: RootState) => state?.user?.data);
-  const dispatch: AppDispatch = useDispatch();
+  const acs_registry_number = `ACS/${String(
+    prefillData?.patient?.address?.block
+  ).toUpperCase()}/${randomNumber}`;
 
   const handleSubmitWithLoader = () => {
     setLoading(true);
+
+    setACSData((prevData) => ({
+      ...prevData,
+      patient_identification: {
+        name: prefillData?.patient?.patient_details?.name || null,
+        block: prefillData?.patient?.address?.block || null,
+        "so/do/h": prefillData?.patient?.patient_details?.relation_name || null,
+        acs_registry_number,
+        district: prefillData?.patient?.address?.district || null,
+      },
+    }));
+
+    dispatch(
+      createForm(
+        "ACS",
+        "case",
+        authState?.data?.user?.id,
+        "admin",
+        prefillData.doctor?.doctor_details?.name ?? "NA",
+        prefillData.doctor?.id ?? "NA",
+        acsData
+      )
+    );
+
     setTimeout(() => {
       setLoading(false);
-      dispatch(
-        createForm(
-          "ACS",
-          "case",
-          "123",
-          "admin",
-          acsData.doctor_assigned.doctor_name,
-          acsData.doctor_assigned.doctor_id,
-          acsData
-        )
-      );
+      setFormFilled(true);
     }, 4000);
   };
 
-  const handleDialogClose = () => {};
+  const router = useRouter();
+
+  const handlePopupClose = () => {
+    setFormFilled(false);
+  };
+  const handlePopupOkay = () => {
+    router.push("/case");
+  };
 
   return (
     <>
       {/* Tile for creating a new doctor */}
+      {formFilled && formState?.message === "form uploaded successfully" && (
+        <Popup
+          open={true}
+          title="Yipee !!"
+          desc={formState?.message}
+          onClose={handlePopupClose}
+          onOkay={handlePopupOkay}
+          okayButtonTitle="New Form"
+        />
+      )}
+
+      {formFilled && formState?.message !== "form uploaded successfully" && (
+        <Popup
+          open={true}
+          title="Uhhh Ohh !!"
+          desc={formState?.message}
+          onClose={handlePopupClose}
+          onOkay={handlePopupOkay}
+          okayButtonTitle="New Form"
+          closeButtonTitle="Try Again"
+        />
+      )}
+
       <FloatingButtonContainer>
         <Button
           variant="contained"
@@ -976,7 +952,7 @@ const ACSCaseFormPage = () => {
       >
         <DashboardCard title="ACS Case Form">
           <>
-            <SearchDialog open={true} onClose={handleDialogClose} />
+            <SearchDialog open={true} onClose={handleCloseDialog} />
             {/* <DynamicForm formData={formData} /> */}
             <NestedAccordion data={acsFormData} />
           </>
