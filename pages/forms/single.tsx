@@ -80,6 +80,8 @@ const FormListView: React.FC<FormListViewProps> = ({ data }) => {
     });
   };
 
+  console.log(data);
+
   return (
     <div>
       {selectedFormData && (

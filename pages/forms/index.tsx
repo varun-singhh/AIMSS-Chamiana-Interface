@@ -25,7 +25,8 @@ interface Column {
     | "category"
     | "consulting_doctor_name"
     | "filler_type"
-    | "created_at";
+    | "created_at"
+    | "registry_number";
   label: string;
   minWidth?: number;
   align?: "right";
@@ -33,12 +34,12 @@ interface Column {
 }
 
 const formColumns: readonly Column[] = [
-  { id: "id", label: "ID", minWidth: 170 },
+  { id: "id", label: "ID", minWidth: 100 },
   { id: "type", label: "Type", minWidth: 100 },
   {
     id: "category",
     label: "Category",
-    minWidth: 170,
+    minWidth: 100,
     align: "right",
   },
   {
@@ -60,6 +61,12 @@ const formColumns: readonly Column[] = [
     minWidth: 170,
     align: "right",
     format: (value: number) => value.toFixed(2),
+  },
+  {
+    id: "registry_number",
+    label: "Registry Number",
+    minWidth: 170,
+    align: "right",
   },
 ];
 
@@ -228,6 +235,17 @@ const AllFormsTable = () => {
                                             align={column.align}
                                           >
                                             {value}
+                                          </TableCell>
+                                        )}
+
+                                        {column.id === "registry_number" && (
+                                          <TableCell
+                                            key={column.id}
+                                            align={column.align}
+                                          >
+                                            {row["data"][
+                                              "patient_identification"
+                                            ]?.["registry_number"] ?? "NA"}
                                           </TableCell>
                                         )}
                                       </>

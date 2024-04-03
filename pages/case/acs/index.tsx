@@ -885,7 +885,7 @@ const ACSCaseFormPage = () => {
             block: prefillData?.patient?.address?.block || null,
             "so/do/h":
               prefillData?.patient?.patient_details?.relation_name || null,
-            acs_registry_number,
+            registry_number: acs_registry_number,
             district: prefillData?.patient?.address?.district || null,
           },
         }
