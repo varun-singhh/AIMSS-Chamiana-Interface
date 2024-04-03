@@ -27,12 +27,6 @@ const Menuitems = [
   //   href: "/",
   // },
 
-  // {
-  //   id: uniqueId(),
-  //   title: "Followup Forms",
-  //   icon: IconReceiptRefund,
-  //   href: "/followup",
-  // },
   {
     id: uniqueId(),
     title: "Profile",
@@ -42,6 +36,12 @@ const Menuitems = [
   {
     navlabel: true,
     subheader: "Management Panel",
+  },
+  {
+    id: uniqueId(),
+    title: "All Forms",
+    icon: IconReceiptRefund,
+    href: "/forms",
   },
   {
     id: uniqueId(),

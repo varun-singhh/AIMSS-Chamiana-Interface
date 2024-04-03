@@ -10,9 +10,12 @@ import {
   REQUEST_OTP_FAILED,
   LOGOUT,
   CLEAR_ERR_STATE,
+  TOKEN_REFRESHED,
+  TOKEN_REFRESH_FAILED,
 } from "./types";
 import { Dispatch } from "redux";
 import { deleteState } from "../localstorage";
+import Cookies from "js-cookie";
 
 export const login = (data: any) => async (dispatch: Dispatch) => {
   try {
@@ -101,7 +104,28 @@ export const resendOtp = (email: string) => async (dispatch: Dispatch) => {
   }
 };
 
+export const refreshToken = () => async (dispatch: Dispatch) => {
+  try {
+    dispatch({ type: LOADING });
+
+    const res = await axios.get(
+      authBaseURL + "refresh-token/" + Cookies.get("token")
+    );
+    dispatch({
+      type: TOKEN_REFRESHED,
+      payload: res.data?.data,
+    });
+  } catch (error: any) {
+    dispatch({
+      type: TOKEN_REFRESH_FAILED,
+      payload: error.response?.data,
+    });
+    logout();
+  }
+};
+
 export const logout = () => async (dispatch: Dispatch) => {
   dispatch({ type: LOGOUT });
   deleteState();
+  window.location.reload();
 };

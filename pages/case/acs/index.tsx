@@ -870,17 +870,6 @@ const ACSCaseFormPage = () => {
   const handleSubmitWithLoader = () => {
     setLoading(true);
 
-    setACSData((prevData) => ({
-      ...prevData,
-      patient_identification: {
-        name: prefillData?.patient?.patient_details?.name || null,
-        block: prefillData?.patient?.address?.block || null,
-        "so/do/h": prefillData?.patient?.patient_details?.relation_name || null,
-        acs_registry_number,
-        district: prefillData?.patient?.address?.district || null,
-      },
-    }));
-
     dispatch(
       createForm(
         "ACS",
@@ -889,7 +878,17 @@ const ACSCaseFormPage = () => {
         "admin",
         prefillData.doctor?.doctor_details?.name ?? "NA",
         prefillData.doctor?.id ?? "NA",
-        acsData
+        {
+          ...acsData,
+          patient_identification: {
+            name: prefillData?.patient?.patient_details?.name || null,
+            block: prefillData?.patient?.address?.block || null,
+            "so/do/h":
+              prefillData?.patient?.patient_details?.relation_name || null,
+            acs_registry_number,
+            district: prefillData?.patient?.address?.district || null,
+          },
+        }
       )
     );
 

@@ -1,5 +1,5 @@
 import axios from "axios";
-import { baseURL } from "../utils/auth";
+import { formServiceBaseURl, setAuthToken } from "../utils/auth";
 import {
   FETCHING_FORM_FROM_SERVER,
   ERROR_FETCHING_FORM,
@@ -10,6 +10,7 @@ import {
   ERROR_DELETING_FORM,
 } from "./types";
 import { Dispatch } from "redux";
+import Cookies from "js-cookie";
 
 export const getSingleForm =
   (id: string, type: string, fillerId: string) =>
@@ -30,24 +31,25 @@ export const getSingleForm =
     }
   };
 
-export const getAllForm =
-  (handleLoading: (status: boolean) => void) => async (dispatch: Dispatch) => {
-    try {
-      handleLoading(true);
-
-      const res = await axios.get(baseURL + `form`);
-      dispatch({
-        type: FETCHING_FORM_FROM_SERVER,
-        payload: res.data,
-      });
-    } catch (error: any) {
-      dispatch({
-        type: ERROR_FETCHING_FORM,
-        payload: error.response,
-      });
-    }
-    handleLoading(false);
-  };
+export const getAllForm = () => async (dispatch: Dispatch) => {
+  try {
+    const res = await axios.get(formServiceBaseURl + `forms`, {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${Cookies.get("token")}`,
+      },
+    });
+    dispatch({
+      type: FETCHING_FORM_FROM_SERVER,
+      payload: res.data,
+    });
+  } catch (error: any) {
+    dispatch({
+      type: ERROR_FETCHING_FORM,
+      payload: error.response,
+    });
+  }
+};
 
 export const createForm =
   (
@@ -66,7 +68,7 @@ export const createForm =
       dispatch({ type: LOADING });
 
       const res = await axios.post(
-        baseURL + `form`,
+        formServiceBaseURl + `form`,
         {
           type,
           category,
@@ -79,6 +81,7 @@ export const createForm =
         {
           headers: {
             "Content-Type": "application/json",
+            Authorization: `Bearer ${Cookies.get("token")}`,
           },
         }
       );
@@ -99,7 +102,7 @@ export const deleteForm =
     try {
       dispatch({ type: LOADING });
 
-      const res = await axios.delete(baseURL + `form/${id}`, {
+      const res = await axios.delete(formServiceBaseURl + `form/${id}`, {
         headers: {
           "Content-Type": "application/json",
         },
