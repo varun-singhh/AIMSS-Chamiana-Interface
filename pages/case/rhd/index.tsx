@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import type { ReactElement } from "react";
 import PageContainer from "../../../src/components/container/PageContainer";
 import DashboardCard from "../../../src/components/shared/DashboardCard";
@@ -12,11 +12,13 @@ import { Button, CircularProgress } from "@mui/material";
 import { useSelector, useDispatch } from "react-redux";
 import { RootState, AppDispatch } from "../../../store";
 import { createForm } from "../../../actions/forms";
+import { getAllDoctorsDetails } from "../../../actions/doctors";
 import SearchDialog from "../../../src/components/dialog";
+import { random } from "lodash";
+import { randomBytes, randomInt } from "crypto";
 import { randomNumber } from "../../../utils/factorty";
 import Popup from "../../../src/components/popup";
 import { useRouter } from "next/router";
-import { getSpokeAndHubCenters } from "../../../utils/utils";
 
 const FloatingButtonContainer = styled("div")({
   position: "fixed",
@@ -60,16 +62,6 @@ const firstMedicalContactData = [
         type: "menu",
         menuItem: ["Center X", "Center Y", "Center Z"],
       },
-      {
-        field: "Other",
-        type: "boolean",
-        isTrue: [
-          {
-            field: "Please Specify Center",
-            type: "string",
-          },
-        ],
-      },
     ],
   },
 ];
@@ -110,7 +102,7 @@ const cvRiskFactorDta = [
   },
 ];
 
-const acsSymptomsData = [
+const rhdSymptomsData = [
   {
     title: "Symptoms",
     children: [
@@ -167,7 +159,7 @@ const acsSymptomsData = [
   },
 ];
 
-const acsExaminationData = [
+const rhdExaminationData = [
   {
     title: "Examination",
     children: [
@@ -203,7 +195,7 @@ const acsExaminationData = [
   },
 ];
 
-const acsIndexECGData = [
+const rhdIndexECGData = [
   {
     title: "Index Ecg",
     children: [
@@ -236,7 +228,7 @@ const acsIndexECGData = [
   },
 ];
 
-const acsTropTiData = [
+const rhdTropTiData = [
   {
     title: "Trop Ti",
     children: [
@@ -249,7 +241,7 @@ const acsTropTiData = [
   },
 ];
 
-const acsBioChemistryData = [
+const rhdBioChemistryData = [
   {
     title: "Biochemistry",
     children: [
@@ -319,7 +311,7 @@ const acsBioChemistryData = [
   },
 ];
 
-const acsTreatmentGivenAtFMCData = [
+const rhdTreatmentGivenAtFMCData = [
   {
     title: "Treatment Given At Fmc",
     children: [
@@ -419,7 +411,7 @@ const acsTreatmentGivenAtFMCData = [
   },
 ];
 
-const acsTreatmentDuringHospitalData = [
+const rhdTreatmentDuringHospitalData = [
   {
     title: "Treatment During Hospital",
     children: [
@@ -524,20 +516,20 @@ const acsTreatmentDuringHospitalData = [
   },
 ];
 
-const acsDiagnosisData = [
+const rhdDiagnosisData = [
   {
     title: "Diagnosis",
     children: [
       {
         field: "Diagnosis",
         type: "multiple",
-        options: ["NSTEMI", "U Angina", "Suspected ACS", "STEMI"],
+        options: ["NSTEMI", "U Angina", "Suspected RHD", "STEMI"],
       },
     ],
   },
 ];
 
-const acsAtDischargeData = [
+const rhdAtDischargeData = [
   {
     title: "At Discharge",
     children: [
@@ -621,7 +613,7 @@ const acsAtDischargeData = [
   },
 ];
 
-const acsHospitalOutcomeData = [
+const rhdHospitalOutcomeData = [
   {
     title: "Hospital Outcome",
     children: [
@@ -698,18 +690,14 @@ const timeDelayPresentataionData = [
   },
 ];
 
-const ACSCaseFormPage = () => {
+const RHDCaseFormPage = () => {
   const dispatch: AppDispatch = useDispatch();
   const authState = useSelector((state: RootState) => state?.auth);
   const formState = useSelector((state: RootState) => state?.form);
   const [prefillData, setPrefillData] = useState({ patient: {}, doctor: {} });
-  const [acsData, setACSData] = useState({});
+  const [rhdData, setRHDData] = useState({});
   const [loading, setLoading] = useState(false);
   const [formFilled, setFormFilled] = useState(false);
-  const centers = getSpokeAndHubCenters();
-
-  firstMedicalContactData[0].children[0].menuItem = centers;
-  firstMedicalContactData[0].children[1].menuItem = centers;
 
   const handleCloseDialog = (data: { patient: any; doctor: any }) => {
     setPrefillData(data);
@@ -720,7 +708,7 @@ const ACSCaseFormPage = () => {
   };
 
   const handleFormDataUpdate = (data: any) => {
-    setACSData((prevData) => {
+    setRHDData((prevData) => {
       return {
         ...prevData,
         ...data,
@@ -728,7 +716,7 @@ const ACSCaseFormPage = () => {
     });
   };
 
-  const acsFormData = [
+  const rhdFormData = [
     {
       title: "Socio Demographics",
       content: (
@@ -739,28 +727,10 @@ const ACSCaseFormPage = () => {
       ),
     },
     {
-      title: "First Medical Contact",
-      content: (
-        <DynamicForm
-          formData={firstMedicalContactData}
-          onFormDataUpdate={handleFormDataUpdate}
-        />
-      ),
-    },
-    {
-      title: "CV Risk Factors",
-      content: (
-        <DynamicForm
-          formData={cvRiskFactorDta}
-          onFormDataUpdate={handleFormDataUpdate}
-        />
-      ),
-    },
-    {
-      title: "Presentation",
+      title: "ARF",
       children: [
         {
-          title: "Time Delays",
+          title: "Major Manifestation",
           content: (
             <DynamicForm
               formData={timeDelayPresentataionData}
@@ -769,82 +739,19 @@ const ACSCaseFormPage = () => {
           ),
         },
         {
-          title: "Symptoms",
+          title: "Minor Manifestation",
           content: (
             <DynamicForm
-              formData={acsSymptomsData}
+              formData={rhdSymptomsData}
               onFormDataUpdate={handleFormDataUpdate}
             />
           ),
         },
         {
-          title: "Examination",
+          title: "Supportive evidence of antecedent streptococcal pharyngitis",
           content: (
             <DynamicForm
-              formData={acsExaminationData}
-              onFormDataUpdate={handleFormDataUpdate}
-            />
-          ),
-        },
-        {
-          title: "Index ECG",
-          content: (
-            <DynamicForm
-              formData={acsIndexECGData}
-              onFormDataUpdate={handleFormDataUpdate}
-            />
-          ),
-        },
-        {
-          title: "Trop T/I",
-          content: (
-            <DynamicForm
-              formData={acsTropTiData}
-              onFormDataUpdate={handleFormDataUpdate}
-            />
-          ),
-        },
-        {
-          title: "Biochemistry",
-          content: (
-            <DynamicForm
-              formData={acsBioChemistryData}
-              onFormDataUpdate={handleFormDataUpdate}
-            />
-          ),
-        },
-        {
-          title: "Diagnosis",
-          content: (
-            <DynamicForm
-              formData={acsDiagnosisData}
-              onFormDataUpdate={handleFormDataUpdate}
-            />
-          ),
-        },
-        {
-          title: "Treatment given at FMC at admission",
-          content: (
-            <DynamicForm
-              formData={acsTreatmentGivenAtFMCData}
-              onFormDataUpdate={handleFormDataUpdate}
-            />
-          ),
-        },
-        {
-          title: "Treatment during hospital",
-          content: (
-            <DynamicForm
-              formData={acsTreatmentDuringHospitalData}
-              onFormDataUpdate={handleFormDataUpdate}
-            />
-          ),
-        },
-        {
-          title: "At Discharge",
-          content: (
-            <DynamicForm
-              formData={acsAtDischargeData}
+              formData={rhdExaminationData}
               onFormDataUpdate={handleFormDataUpdate}
             />
           ),
@@ -852,17 +759,107 @@ const ACSCaseFormPage = () => {
       ],
     },
     {
-      title: "Hospital Outcome",
+      title: "Medical History (at registry)",
       content: (
         <DynamicForm
-          formData={acsHospitalOutcomeData}
+          formData={cvRiskFactorDta}
+          onFormDataUpdate={handleFormDataUpdate}
+        />
+      ),
+    },
+    {
+      title: "Complications (at registry/in past)",
+      content: (
+        <DynamicForm
+          formData={cvRiskFactorDta}
+          onFormDataUpdate={handleFormDataUpdate}
+        />
+      ),
+    },
+    {
+      title: "ECG",
+      content: (
+        <DynamicForm
+          formData={cvRiskFactorDta}
+          onFormDataUpdate={handleFormDataUpdate}
+        />
+      ),
+    },
+    {
+      title: "Ecocardiography",
+      content: (
+        <DynamicForm
+          formData={cvRiskFactorDta}
+          onFormDataUpdate={handleFormDataUpdate}
+        />
+      ),
+    },
+    {
+      title: "Bloodchemistry",
+      content: (
+        <DynamicForm
+          formData={cvRiskFactorDta}
+          onFormDataUpdate={handleFormDataUpdate}
+        />
+      ),
+    },
+    {
+      title: "Treatment (at registry)",
+      content: (
+        <DynamicForm
+          formData={cvRiskFactorDta}
+          onFormDataUpdate={handleFormDataUpdate}
+        />
+      ),
+    },
+    {
+      title: "Rheumatic Fever Secondary Prophylaxis recommended",
+      content: (
+        <DynamicForm
+          formData={cvRiskFactorDta}
+          onFormDataUpdate={handleFormDataUpdate}
+        />
+      ),
+    },
+    {
+      title: "History of PTMC since last visit",
+      content: (
+        <DynamicForm
+          formData={cvRiskFactorDta}
+          onFormDataUpdate={handleFormDataUpdate}
+        />
+      ),
+    },
+    {
+      title: "History of Surgical valve Replacement since last visit",
+      content: (
+        <DynamicForm
+          formData={cvRiskFactorDta}
+          onFormDataUpdate={handleFormDataUpdate}
+        />
+      ),
+    },
+    {
+      title: "Tricuspid Valve Repair since last visit",
+      content: (
+        <DynamicForm
+          formData={cvRiskFactorDta}
+          onFormDataUpdate={handleFormDataUpdate}
+        />
+      ),
+    },
+    {
+      title: "Oral Anticoagulation",
+      content: (
+        <DynamicForm
+          formData={cvRiskFactorDta}
           onFormDataUpdate={handleFormDataUpdate}
         />
       ),
     },
   ];
 
-  const acs_registry_number = `ACS/${String(
+  const rhd_registry_number = `RHD/${String(
     prefillData?.patient?.address?.block
   ).toUpperCase()}/${randomNumber}`;
 
@@ -871,22 +868,22 @@ const ACSCaseFormPage = () => {
 
     dispatch(
       createForm(
-        "ACS",
+        "RHD",
         "case",
         authState?.data?.user?.id,
         "admin",
         prefillData.doctor?.doctor_details?.name ?? "NA",
         prefillData.doctor?.id ?? "NA",
         {
+          ...rhdData,
           patient_identification: {
             name: prefillData?.patient?.patient_details?.name || null,
             block: prefillData?.patient?.address?.block || null,
             "so/do/h":
               prefillData?.patient?.patient_details?.relation_name || null,
-            registry_number: acs_registry_number,
+            registry_number: rhd_registry_number,
             district: prefillData?.patient?.address?.district || null,
           },
-          ...acsData,
         }
       )
     );
@@ -945,14 +942,14 @@ const ACSCaseFormPage = () => {
         <ArrowBackIcon />
       </IconButton>
       <PageContainer
-        title="ACS Case Form"
-        description="this is ACS Case Form page"
+        title="RHD Case Form"
+        description="this is RHD Case Form page"
       >
-        <DashboardCard title="ACS Case Form">
+        <DashboardCard title="RHD Case Form">
           <>
             <SearchDialog open={true} onClose={handleCloseDialog} />
             {/* <DynamicForm formData={formData} /> */}
-            <NestedAccordion data={acsFormData} />
+            <NestedAccordion data={rhdFormData} />
           </>
         </DashboardCard>
       </PageContainer>
@@ -960,7 +957,7 @@ const ACSCaseFormPage = () => {
   );
 };
 
-export default ACSCaseFormPage;
-ACSCaseFormPage.getLayout = function getLayout(page: ReactElement) {
+export default RHDCaseFormPage;
+RHDCaseFormPage.getLayout = function getLayout(page: ReactElement) {
   return <FullLayout>{page}</FullLayout>;
 };

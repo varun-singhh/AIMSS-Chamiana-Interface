@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import type { ReactElement } from "react";
 import PageContainer from "../../../src/components/container/PageContainer";
 import DashboardCard from "../../../src/components/shared/DashboardCard";
@@ -16,7 +16,6 @@ import SearchDialog from "../../../src/components/dialog";
 import { randomNumber } from "../../../utils/factorty";
 import Popup from "../../../src/components/popup";
 import { useRouter } from "next/router";
-import { getSpokeAndHubCenters } from "../../../utils/utils";
 
 const FloatingButtonContainer = styled("div")({
   position: "fixed",
@@ -33,6 +32,7 @@ const socioDemographicData = [
         field: "Education",
         type: "string",
       },
+
       {
         field: "Residential Area",
         type: "menu",
@@ -46,27 +46,92 @@ const socioDemographicData = [
   },
 ];
 
-const firstMedicalContactData = [
+const dignosisData = [
   {
-    title: "First Medical Contact",
+    title: "Diagnosis",
     children: [
       {
-        field: "Name of Hub Center",
+        field: "Stable CAD/Post ACS",
         type: "menu",
-        menuItem: ["Center A", "Center B", "Center C"],
+        menuItem: ["Stable CAD", "Post ACS"],
       },
       {
-        field: "Name of Spoke Center",
-        type: "menu",
-        menuItem: ["Center X", "Center Y", "Center Z"],
+        field: "RWM abnormality",
+        type: "boolean",
       },
       {
-        field: "Other",
+        field: "Degenerative Aortic valve disease",
+        type: "boolean",
+      },
+      {
+        field: "LV global systolic dysfunction",
+        type: "menu",
+        menuItem: [
+          "Mild dysfunction",
+          "Moderate dysfunction",
+          "Sevre dysfunction",
+          "Not Known",
+        ],
+      },
+      {
+        field: "MR",
+        type: "menu",
+        menuItem: ["Mild", "Moderate", "Sevre", "Not Known"],
+      },
+      {
+        field: "AR",
+        type: "menu",
+        menuItem: ["Mild", "Moderate", "Sevre", "Not Known"],
+      },
+      {
+        field: "AS",
+        type: "menu",
+        menuItem: ["Mild", "Moderate", "Sevre", "Not Known"],
+      },
+    ],
+  },
+];
+
+const durationofFollowupData = [
+  {
+    title: "Duration of follow up in Cardiology OPD before registry",
+    children: [
+      {
+        field: "Duration in Months",
+        type: "number",
+      },
+    ],
+  },
+];
+
+const cvRiskFactorData = [
+  {
+    title: "CV Risk Factors",
+    children: [
+      {
+        field: "H/O Hypertension",
+        type: "boolean",
+      },
+      {
+        field: "H/O PCI",
+        type: "boolean",
+      },
+      {
+        field: "H/O MI",
+        type: "boolean",
+      },
+      {
+        field: "H/O Diabetes",
+        type: "boolean",
+      },
+      {
+        field: "H/O Current Tabaco Consumption",
         type: "boolean",
         isTrue: [
           {
-            field: "Please Specify Center",
-            type: "string",
+            field: "Nature of Tabaco Consumption",
+            type: "menu",
+            menuItem: ["Smoke", "Smokeless", "Both"],
           },
         ],
       },
@@ -74,109 +139,127 @@ const firstMedicalContactData = [
   },
 ];
 
-const cvRiskFactorDta = [
+const medicalhistoryCadData = [
   {
-    title: "Cv Risk Factors",
+    title: "Medical History of CAD",
     children: [
       {
-        field: "Hypertension",
+        field: "Past H/O MI",
         type: "boolean",
       },
       {
-        field: "Diabetes",
+        field: "Past H/O PCI",
         type: "boolean",
       },
       {
-        field: "Current Tabacoo Consumption",
+        field: "Past H/O CABG",
         type: "boolean",
       },
       {
-        field: "History of MI in past",
+        field: "Pst H/O Coronary angiography",
         type: "boolean",
+        isTrue: [
+          {
+            field: "Date of Coronary angiography",
+            type: "date",
+          },
+          {
+            field: "CAD status",
+            type: "menu",
+            menuItem: ["Obstructive CAD", "Non-Obstructive CAD"],
+          },
+          {
+            field: "Extent of CAD",
+            type: "menu",
+            menuItem: ["SVD Disease", "DVD Disease", "TVD Disease"],
+          },
+          {
+            field: "LCMA Disease",
+            type: "boolean",
+          },
+        ],
       },
       {
-        field: "History of PCI",
-        type: "boolean",
-      },
-      {
-        field: "H/o CABG",
-        type: "boolean",
-      },
-      {
-        field: "H/o Stroke",
-        type: "boolean",
+        field: "LV systolic Function",
+        type: "menu",
+        menuItem: [
+          "Not Known",
+          "Normal(>50%)",
+          "Mild dysfunction(40-49%)",
+          "Moderate dysfunction(30-39%)",
+          "Sevre dysfunction(<29%)",
+        ],
       },
     ],
   },
 ];
 
-const acsSymptomsData = [
+const cadSymptomsData = [
   {
     title: "Symptoms",
     children: [
       {
-        field: "Chest Pain",
-        type: "boolean",
-        isTrue: [
-          {
-            field: "Site of Chest Pain",
-            type: "menu",
-            menuItem: ["Left Side", "Right Side"],
-          },
-          {
-            field: "Radiation of chest pain",
-            type: "multiple",
-            options: ["Arms", "Shoulder", "Back", "Neck", "Jaw"],
-          },
-          {
-            field: "Aggravating factors",
-            type: "multiple",
-            options: ["Deep Breath", "Change of Posture", "Exertion"],
-          },
+        field: "Angina Class",
+        type: "menu",
+        menuItem: [
+          "No angina on routine physical activity",
+          "Mild angina on routine physical activity",
+          "Severe angina on routine physical activity",
+          "Angina at rest",
         ],
       },
       {
-        field: "Epigastric Pain",
-        type: "boolean",
-      },
-      {
-        field: "Vomiting Pain",
-        type: "boolean",
-      },
-      {
-        field: "Feeling of profound weakness",
-        type: "boolean",
-      },
-      {
-        field: "Postural blackout( on standing)",
-        type: "boolean",
-      },
-      {
-        field: "Breathlessness",
-        type: "boolean",
-      },
-      {
-        field: "Cold Perspiration",
-        type: "boolean",
-      },
-      {
-        field: "Loss of consciousness",
-        type: "boolean",
+        field: "Breathlessness Class",
+        type: "menu",
+        menuItem: [
+          "No Breathlessness on routine physical activity",
+          "Mild Breathlessness on routine physical activity",
+          "Severe Breathlessness on routine physical activity",
+          "Breathlessness at rest",
+        ],
       },
     ],
   },
 ];
 
-const acsExaminationData = [
+const AVDinOtherVascularTerritoryData = [
   {
-    title: "Examination",
+    title: "Atherosclerotic Vascular disease in other vascular territory",
     children: [
       {
-        field: "SBP",
+        field: "CVA/TIA",
+        type: "boolean",
+      },
+      {
+        field: "PVD",
+        type: "boolean",
+        isTrue: [
+          {
+            field: "PVD Type",
+            type: "menu",
+            menuItem: [
+              "Angio Proven PVD/",
+              "H/O PTA/",
+              "H/O Bypass grafting",
+              "doppler evidence of PVD",
+            ],
+          },
+        ],
+      },
+    ],
+  },
+];
+
+const cadExaminationData = [
+  {
+    title: "Physical Examination",
+    children: [
+      {
+        field: "SBP (mmHg)",
         type: "number",
       },
       {
-        field: "DBP",
+        field: "DBP (mmHg)",
         type: "number",
       },
       {
@@ -184,11 +267,11 @@ const acsExaminationData = [
         type: "number",
       },
       {
-        field: "Weight",
+        field: "Weight (Kg)",
         type: "number",
       },
       {
-        field: "Height",
+        field: "Height (meter)",
         type: "number",
       },
       {
@@ -198,12 +281,24 @@ const acsExaminationData = [
       {
         field: "BMI",
         type: "number",
+        value: "",
+      },
+      {
+        field: "BMI Status",
+        type: "menu",
+        menuItem: [
+          "Underweight (<18.5)",
+          "Normal weight (18.5-22.9)",
+          "Overweight (23-24.9)",
+          "Pre-obese (25-29.9)",
+          "Obese (>30)",
+        ],
       },
     ],
   },
 ];
 
-const acsIndexECGData = [
+const cadIndexECGData = [
   {
     title: "Index Ecg",
     children: [
@@ -236,7 +331,7 @@ const acsIndexECGData = [
   },
 ];
 
-const acsTropTiData = [
+const cadTropTiData = [
   {
     title: "Trop Ti",
     children: [
@@ -249,7 +344,7 @@ const acsTropTiData = [
   },
 ];
 
-const acsBioChemistryData = [
+const cadBioChemistryData = [
   {
     title: "Biochemistry",
     children: [
@@ -319,7 +414,7 @@ const acsBioChemistryData = [
   },
 ];
 
-const acsTreatmentGivenAtFMCData = [
+const cadTreatmentGivenAtFMCData = [
   {
     title: "Treatment Given At Fmc",
     children: [
@@ -419,7 +514,7 @@ const acsTreatmentGivenAtFMCData = [
   },
 ];
 
-const acsTreatmentDuringHospitalData = [
+const cadTreatmentDuringHospitalData = [
   {
     title: "Treatment During Hospital",
     children: [
@@ -524,20 +619,20 @@ const acsTreatmentDuringHospitalData = [
   },
 ];
 
-const acsDiagnosisData = [
+const cadDiagnosisData = [
   {
     title: "Diagnosis",
     children: [
       {
         field: "Diagnosis",
         type: "multiple",
-        options: ["NSTEMI", "U Angina", "Suspected ACS", "STEMI"],
+        options: ["NSTEMI", "U Angina", "Suspected CAD", "STEMI"],
       },
     ],
   },
 ];
 
-const acsAtDischargeData = [
+const cadAtDischargeData = [
   {
     title: "At Discharge",
     children: [
@@ -621,7 +716,7 @@ const acsAtDischargeData = [
   },
 ];
 
-const acsHospitalOutcomeData = [
+const cadHospitalOutcomeData = [
   {
     title: "Hospital Outcome",
     children: [
@@ -698,18 +793,16 @@ const timeDelayPresentataionData = [
   },
 ];
 
-const ACSCaseFormPage = () => {
+const CADCaseFormPage = () => {
   const dispatch: AppDispatch = useDispatch();
   const authState = useSelector((state: RootState) => state?.auth);
   const formState = useSelector((state: RootState) => state?.form);
   const [prefillData, setPrefillData] = useState({ patient: {}, doctor: {} });
-  const [acsData, setACSData] = useState({});
+  const [cadData, setCADData] = useState({
+    physical_examination: { height: 0, weight: 0, bmi: 0 },
+  });
   const [loading, setLoading] = useState(false);
   const [formFilled, setFormFilled] = useState(false);
-  const centers = getSpokeAndHubCenters();
-
-  firstMedicalContactData[0].children[0].menuItem = centers;
-  firstMedicalContactData[0].children[1].menuItem = centers;
 
   const handleCloseDialog = (data: { patient: any; doctor: any }) => {
     setPrefillData(data);
@@ -720,7 +813,7 @@ const ACSCaseFormPage = () => {
   };
 
   const handleFormDataUpdate = (data: any) => {
-    setACSData((prevData) => {
+    setCADData((prevData) => {
       return {
         ...prevData,
         ...data,
@@ -728,7 +821,7 @@ const ACSCaseFormPage = () => {
     });
   };
 
-  const acsFormData = [
+  const cadFormData = [
     {
       title: "Socio Demographics",
       content: (
@@ -739,10 +832,19 @@ const ACSCaseFormPage = () => {
       ),
     },
     {
-      title: "First Medical Contact",
+      title: "Diagnosis",
       content: (
         <DynamicForm
-          formData={firstMedicalContactData}
+          formData={dignosisData}
+          onFormDataUpdate={handleFormDataUpdate}
+        />
+      ),
+    },
+    {
+      title: "Duration of Followup in Cardiology OPD",
+      content: (
+        <DynamicForm
+          formData={durationofFollowupData}
           onFormDataUpdate={handleFormDataUpdate}
         />
       ),
@@ -751,16 +853,97 @@ const ACSCaseFormPage = () => {
       title: "CV Risk Factors",
       content: (
         <DynamicForm
-          formData={cvRiskFactorDta}
+          formData={cvRiskFactorData}
           onFormDataUpdate={handleFormDataUpdate}
         />
       ),
     },
     {
-      title: "Presentation",
+      title: "Medical History of CAD",
+      content: (
+        <DynamicForm
+          formData={medicalhistoryCadData}
+          onFormDataUpdate={handleFormDataUpdate}
+        />
+      ),
+    },
+    {
+      title: "Symptoms",
+      content: (
+        <DynamicForm
+          formData={cadSymptomsData}
+          onFormDataUpdate={handleFormDataUpdate}
+        />
+      ),
+    },
+    {
+      title: "Atherosclerotic Vascular disease in other vascular territory",
+      content: (
+        <DynamicForm
+          formData={AVDinOtherVascularTerritoryData}
+          onFormDataUpdate={handleFormDataUpdate}
+        />
+      ),
+    },
+    {
+      title: "Physical Examination",
+      content: (
+        <DynamicForm
+          formData={cadExaminationData}
+          onFormDataUpdate={handleFormDataUpdate}
+        />
+      ),
+    },
+    {
+      title: "Lab Investigation",
+      content: (
+        <DynamicForm
+          formData={durationofFollowupData}
+          onFormDataUpdate={handleFormDataUpdate}
+        />
+      ),
+    },
+    {
+      title: "ECG",
+      content: (
+        <DynamicForm
+          formData={durationofFollowupData}
+          onFormDataUpdate={handleFormDataUpdate}
+        />
+      ),
+    },
+    {
+      title: "Echocardiography",
+      content: (
+        <DynamicForm
+          formData={durationofFollowupData}
+          onFormDataUpdate={handleFormDataUpdate}
+        />
+      ),
+    },
+    {
+      title: "Holter Monitoring",
+      content: (
+        <DynamicForm
+          formData={durationofFollowupData}
+          onFormDataUpdate={handleFormDataUpdate}
+        />
+      ),
+    },
+    {
+      title: "Stress Test",
+      content: (
+        <DynamicForm
+          formData={durationofFollowupData}
+          onFormDataUpdate={handleFormDataUpdate}
+        />
+      ),
+    },
+    {
+      title: "Management Practices",
       children: [
         {
-          title: "Time Delays",
+          title: "Practice of Health Behaviour",
           content: (
             <DynamicForm
               formData={timeDelayPresentataionData}
@@ -769,100 +952,28 @@ const ACSCaseFormPage = () => {
           ),
         },
         {
-          title: "Symptoms",
+          title: "Drug Prescribed",
           content: (
             <DynamicForm
-              formData={acsSymptomsData}
+              formData={cvRiskFactorData}
               onFormDataUpdate={handleFormDataUpdate}
             />
           ),
         },
         {
-          title: "Examination",
+          title: "Diabetes",
           content: (
             <DynamicForm
-              formData={acsExaminationData}
-              onFormDataUpdate={handleFormDataUpdate}
-            />
-          ),
-        },
-        {
-          title: "Index ECG",
-          content: (
-            <DynamicForm
-              formData={acsIndexECGData}
-              onFormDataUpdate={handleFormDataUpdate}
-            />
-          ),
-        },
-        {
-          title: "Trop T/I",
-          content: (
-            <DynamicForm
-              formData={acsTropTiData}
-              onFormDataUpdate={handleFormDataUpdate}
-            />
-          ),
-        },
-        {
-          title: "Biochemistry",
-          content: (
-            <DynamicForm
-              formData={acsBioChemistryData}
-              onFormDataUpdate={handleFormDataUpdate}
-            />
-          ),
-        },
-        {
-          title: "Diagnosis",
-          content: (
-            <DynamicForm
-              formData={acsDiagnosisData}
-              onFormDataUpdate={handleFormDataUpdate}
-            />
-          ),
-        },
-        {
-          title: "Treatment given at FMC at admission",
-          content: (
-            <DynamicForm
-              formData={acsTreatmentGivenAtFMCData}
-              onFormDataUpdate={handleFormDataUpdate}
-            />
-          ),
-        },
-        {
-          title: "Treatment during hospital",
-          content: (
-            <DynamicForm
-              formData={acsTreatmentDuringHospitalData}
-              onFormDataUpdate={handleFormDataUpdate}
-            />
-          ),
-        },
-        {
-          title: "At Discharge",
-          content: (
-            <DynamicForm
-              formData={acsAtDischargeData}
+              formData={cadExaminationData}
               onFormDataUpdate={handleFormDataUpdate}
             />
           ),
         },
       ],
     },
-    {
-      title: "Hospital Outcome",
-      content: (
-        <DynamicForm
-          formData={acsHospitalOutcomeData}
-          onFormDataUpdate={handleFormDataUpdate}
-        />
-      ),
-    },
   ];
 
-  const acs_registry_number = `ACS/${String(
+  const cad_registry_number = `CAD/${String(
     prefillData?.patient?.address?.block
   ).toUpperCase()}/${randomNumber}`;
 
@@ -871,7 +982,7 @@ const ACSCaseFormPage = () => {
 
     dispatch(
       createForm(
-        "ACS",
+        "CAD",
         "case",
         authState?.data?.user?.id,
         "admin",
@@ -883,10 +994,10 @@ const ACSCaseFormPage = () => {
             block: prefillData?.patient?.address?.block || null,
             "so/do/h":
               prefillData?.patient?.patient_details?.relation_name || null,
-            registry_number: acs_registry_number,
+            registry_number: cad_registry_number,
             district: prefillData?.patient?.address?.district || null,
           },
-          ...acsData,
+          ...cadData,
         }
       )
     );
@@ -945,14 +1056,14 @@ const ACSCaseFormPage = () => {
         <ArrowBackIcon />
       </IconButton>
       <PageContainer
-        title="ACS Case Form"
-        description="this is ACS Case Form page"
+        title="CAD Case Form"
+        description="this is CAD Case Form page"
       >
-        <DashboardCard title="ACS Case Form">
+        <DashboardCard title="CAD Case Form">
           <>
             <SearchDialog open={true} onClose={handleCloseDialog} />
             {/* <DynamicForm formData={formData} /> */}
-            <NestedAccordion data={acsFormData} />
+            <NestedAccordion data={cadFormData} />
           </>
         </DashboardCard>
       </PageContainer>
@@ -960,7 +1071,7 @@ const ACSCaseFormPage = () => {
   );
 };
 
-export default ACSCaseFormPage;
-ACSCaseFormPage.getLayout = function getLayout(page: ReactElement) {
+export default CADCaseFormPage;
+CADCaseFormPage.getLayout = function getLayout(page: ReactElement) {
   return <FullLayout>{page}</FullLayout>;
 };

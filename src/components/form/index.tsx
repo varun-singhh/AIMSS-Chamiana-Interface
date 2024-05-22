@@ -16,6 +16,7 @@ interface FormData {
   title: string;
   children: {
     field: string;
+    value: any;
     type: string;
     isTrue?: FormData["children"];
     isFalse?: FormData["children"];
@@ -27,7 +28,10 @@ interface FormData {
 
 type FormDataUpdateCallback = (formData: any) => void;
 
-const DynamicForm: React.FC<{ formData: FormData[], onFormDataUpdate: FormDataUpdateCallback }> = ({ formData, onFormDataUpdate }) => {
+const DynamicForm: React.FC<{
+  formData: FormData[];
+  onFormDataUpdate: FormDataUpdateCallback;
+}> = ({ formData, onFormDataUpdate }) => {
   // State to store values entered by the user for each field
   const [formValues, setFormValues] = useState<{ [fieldName: string]: any }>(
     {}
@@ -65,7 +69,7 @@ const DynamicForm: React.FC<{ formData: FormData[], onFormDataUpdate: FormDataUp
         });
         formDataObject[convertFieldName(title)] = fieldValues; // Convert title
       });
-      onFormDataUpdate(formDataObject)
+      onFormDataUpdate(formDataObject);
     }, 1000);
 
     // Clear the interval on component unmount
@@ -79,7 +83,7 @@ const DynamicForm: React.FC<{ formData: FormData[], onFormDataUpdate: FormDataUp
           <TextField
             sx={{ width: "100%", margin: "10px 0px" }}
             label={fieldData.field}
-            value={formValues[fieldData.field] || ""}
+            value={formValues[fieldData.field] || fieldData.value}
             onChange={(e) =>
               handleFieldValueChange(fieldData.field, e.target.value)
             }
@@ -91,7 +95,7 @@ const DynamicForm: React.FC<{ formData: FormData[], onFormDataUpdate: FormDataUp
             sx={{ width: "100%", margin: "10px 0px" }}
             type="number"
             label={fieldData.field}
-            value={formValues[fieldData.field] || ""}
+            value={formValues[fieldData.field] || fieldData.value}
             onChange={(e) =>
               handleFieldValueChange(fieldData.field, e.target.value)
             }
@@ -125,19 +129,18 @@ const DynamicForm: React.FC<{ formData: FormData[], onFormDataUpdate: FormDataUp
               </RadioGroup>
             </Grid>
             {formValues[fieldData.field]
-  ? fieldData.isTrue &&
-    fieldData.isTrue.map((subField, index) => (
-      <Grid item xs={12} key={`${fieldData.field}-true-${index}`}>
-        {renderField(subField)}
-      </Grid>
-    ))
-  : fieldData.isFalse &&
-    fieldData.isFalse.map((subField, index) => (
-      <Grid item xs={12} key={`${fieldData.field}-false-${index}`}>
-        {renderField(subField)}
-      </Grid>
-    ))}
-
+              ? fieldData.isTrue &&
+                fieldData.isTrue.map((subField, index) => (
+                  <Grid item xs={12} key={`${fieldData.field}-true-${index}`}>
+                    {renderField(subField)}
+                  </Grid>
+                ))
+              : fieldData.isFalse &&
+                fieldData.isFalse.map((subField, index) => (
+                  <Grid item xs={12} key={`${fieldData.field}-false-${index}`}>
+                    {renderField(subField)}
+                  </Grid>
+                ))}
           </Grid>
         );
 

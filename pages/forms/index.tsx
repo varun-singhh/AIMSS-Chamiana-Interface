@@ -14,7 +14,7 @@ import FullLayout from "../../src/layouts/full/FullLayout";
 import { AppDispatch, RootState } from "../../store";
 import { useDispatch, useSelector } from "react-redux";
 import { getAllForm } from "../../actions/forms";
-import { getDateFromString } from "../../utils/auth";
+import { getDateFromString } from "../../utils/utils";
 import ArrowBackIos from "@mui/icons-material/ArrowBackIos";
 import FormListView from "./single";
 

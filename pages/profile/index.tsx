@@ -17,7 +17,7 @@ import DashboardCard from "../../src/components/shared/DashboardCard";
 import FullLayout from "../../src/layouts/full/FullLayout";
 import { useSelector } from "react-redux";
 import { AppDispatch, RootState } from "../../store";
-import { getDateFromString } from "../../utils/auth";
+import { getDateFromString } from "../../utils/utils";
 import EmailIcon from "@mui/icons-material/Email";
 import PhoneIcon from "@mui/icons-material/Phone";
 import DateRangeIcon from "@mui/icons-material/DateRange";

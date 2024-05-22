@@ -12,7 +12,7 @@ import { RootState, AppDispatch } from "../../../store";
 import { useSelector, useDispatch } from "react-redux";
 import { useRouter } from "next/router";
 import Cookies from "js-cookie";
-import { clearCookie } from "../../../utils/auth";
+import { clearCookie } from "../../../utils/utils";
 
 export const OtpVerification = () => {
   const router = useRouter();

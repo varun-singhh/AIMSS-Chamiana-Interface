@@ -1,5 +1,5 @@
 import axios from "axios";
-import { userServiceBaseURL } from "../utils/auth";
+import { userServiceBaseURL } from "../utils/utils";
 import {
   LOADING,
   GET_PATIENT_DETAILS,

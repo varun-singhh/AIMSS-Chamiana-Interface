@@ -1,5 +1,5 @@
 import axios from "axios";
-import { formServiceBaseURl, setAuthToken } from "../utils/auth";
+import { formServiceBaseURl, setAuthToken } from "../utils/utils";
 import {
   FETCHING_FORM_FROM_SERVER,
   ERROR_FETCHING_FORM,

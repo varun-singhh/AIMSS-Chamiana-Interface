@@ -1,5 +1,5 @@
 import axios from "axios";
-import { authBaseURL } from "../utils/auth";
+import { authBaseURL } from "../utils/utils";
 import {
   USER_LOGIN,
   REGISTER_USER,

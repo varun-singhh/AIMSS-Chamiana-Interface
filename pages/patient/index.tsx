@@ -28,6 +28,7 @@ import {
   getAllPatientsDetails,
 } from "../../actions/patients";
 import { useRouter } from "next/router";
+import { districtToBlockMap, getIndianStatesAndUTs } from "../../utils/utils";
 
 interface Patient {
   name: string;
@@ -59,7 +60,7 @@ const SamplePage = () => {
   const errState = useSelector(
     (state: RootState) => state?.error?.data?.errors
   );
-
+  const statesAndUTs = getIndianStatesAndUTs();
   const [pageloader, setPageloader] = useState(true);
   const [searchNameQuery, setNameSearchQuery] = useState<string>("");
   const [searchPhoneQuery, setPhoneSearchQuery] = useState<string>("");
@@ -380,38 +381,8 @@ const SamplePage = () => {
                       />
                     </Grid>
                     <Grid item xs={6}>
-                      <TextField
-                        label="Block"
-                        variant="outlined"
-                        fullWidth
-                        value={newPatientDetails.block || ""}
-                        onChange={(e) =>
-                          setNewPatientDetails({
-                            ...newPatientDetails,
-                            block: e.target.value,
-                          })
-                        }
-                      />
-                    </Grid>
-                    <Grid item xs={6}>
-                      <TextField
-                        label="State"
-                        variant="outlined"
-                        fullWidth
-                        value={newPatientDetails.state || ""}
-                        onChange={(e) =>
-                          setNewPatientDetails({
-                            ...newPatientDetails,
-                            state: e.target.value,
-                          })
-                        }
-                      />
-                    </Grid>
-                    <Grid item xs={6}>
-                      <TextField
-                        label="District"
-                        variant="outlined"
-                        fullWidth
+                      <InputLabel>District</InputLabel>
+                      <Select
                         value={newPatientDetails.district || ""}
                         onChange={(e) =>
                           setNewPatientDetails({
@@ -419,9 +390,62 @@ const SamplePage = () => {
                             district: e.target.value,
                           })
                         }
-                      />
+                        fullWidth
+                        variant="outlined"
+                      >
+                        {districtToBlockMap.map((district, i) => (
+                          <MenuItem value={district?.district} key={i}>
+                            {district?.district ?? "NA"}
+                          </MenuItem>
+                        ))}
+                      </Select>
                     </Grid>
                     <Grid item xs={6}>
+                      <InputLabel>State</InputLabel>
+                      <Select
+                        value={newPatientDetails.state || ""}
+                        onChange={(e) =>
+                          setNewPatientDetails({
+                            ...newPatientDetails,
+                            state: e.target.value,
+                          })
+                        }
+                        fullWidth
+                        variant="outlined"
+                      >
+                        {statesAndUTs.map((val, i) => (
+                          <MenuItem value={val} key={i}>
+                            {val ?? "NA"}
+                          </MenuItem>
+                        ))}
+                      </Select>
+                    </Grid>
+                    <Grid item xs={6}>
+                      <InputLabel>Block</InputLabel>
+                      <Select
+                        value={newPatientDetails.block || ""}
+                        onChange={(e) =>
+                          setNewPatientDetails({
+                            ...newPatientDetails,
+                            block: e.target.value,
+                          })
+                        }
+                        fullWidth
+                        variant="outlined"
+                      >
+                        {districtToBlockMap.map(
+                          (m, i) =>
+                            m.district === newPatientDetails.district &&
+                            m.blocks.map((b, j) => (
+                              <MenuItem value={b} key={j}>
+                                {b ?? "NA"}
+                              </MenuItem>
+                            ))
+                        )}
+                      </Select>
+                    </Grid>
+                    <Grid item xs={6}>
+                      <InputLabel>&nbsp;</InputLabel>
                       <TextField
                         label="Pincode"
                         variant="outlined"

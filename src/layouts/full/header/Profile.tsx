@@ -16,7 +16,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { RootState, AppDispatch } from "../../../../store";
 import { logout } from "../../../../actions/auth";
 import Cookies from "js-cookie";
-import { clearCookie } from "../../../../utils/auth";
+import { clearCookie } from "../../../../utils/utils";
 
 const Profile = (rootState: any) => {
   const state = useSelector((state: RootState) => state);

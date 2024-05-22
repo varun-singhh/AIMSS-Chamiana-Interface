@@ -11,6 +11,7 @@ import {
   DialogActions,
   Select,
   MenuItem,
+  InputLabel,
   CircularProgress, // Import CircularProgress for the loader
 } from "@mui/material";
 
@@ -22,6 +23,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { AppDispatch, RootState } from "../../store";
 import { createNewDoctor, getAllDoctorsDetails } from "../../actions/doctors";
 import StickyHeadTable from "../../src/components/table/table";
+import { districtToBlockMap, getIndianStatesAndUTs } from "../../utils/utils";
 
 interface doctor {
   name: string;
@@ -53,7 +55,7 @@ const SamplePage = () => {
   const errState = useSelector(
     (state: RootState) => state?.error?.data?.errors
   );
-
+  const statesAndUTs = getIndianStatesAndUTs();
   const [pageloader, setPageloader] = useState(true);
   const [searchNameQuery, setNameSearchQuery] = useState<string>("");
   const [searchPhoneQuery, setPhoneSearchQuery] = useState<string>("");
@@ -355,38 +357,8 @@ const SamplePage = () => {
                       />
                     </Grid>
                     <Grid item xs={6}>
-                      <TextField
-                        label="Block"
-                        variant="outlined"
-                        fullWidth
-                        value={newdoctorDetails.block || ""}
-                        onChange={(e) =>
-                          setNewdoctorDetails({
-                            ...newdoctorDetails,
-                            block: e.target.value,
-                          })
-                        }
-                      />
-                    </Grid>
-                    <Grid item xs={6}>
-                      <TextField
-                        label="State"
-                        variant="outlined"
-                        fullWidth
-                        value={newdoctorDetails.state || ""}
-                        onChange={(e) =>
-                          setNewdoctorDetails({
-                            ...newdoctorDetails,
-                            state: e.target.value,
-                          })
-                        }
-                      />
-                    </Grid>
-                    <Grid item xs={6}>
-                      <TextField
-                        label="District"
-                        variant="outlined"
-                        fullWidth
+                      <InputLabel>District</InputLabel>
+                      <Select
                         value={newdoctorDetails.district || ""}
                         onChange={(e) =>
                           setNewdoctorDetails({
@@ -394,23 +366,62 @@ const SamplePage = () => {
                             district: e.target.value,
                           })
                         }
-                      />
+                        fullWidth
+                        variant="outlined"
+                      >
+                        {districtToBlockMap.map((district, i) => (
+                          <MenuItem value={district?.district} key={i}>
+                            {district?.district ?? "NA"}
+                          </MenuItem>
+                        ))}
+                      </Select>
                     </Grid>
                     <Grid item xs={6}>
-                      <TextField
-                        label="Pincode"
-                        variant="outlined"
-                        fullWidth
-                        value={newdoctorDetails.pincode || ""}
+                      <InputLabel>State</InputLabel>
+                      <Select
+                        value={newdoctorDetails.state || ""}
                         onChange={(e) =>
                           setNewdoctorDetails({
                             ...newdoctorDetails,
-                            pincode: parseInt(e.target.value) || 0,
+                            state: e.target.value,
                           })
                         }
-                      />
+                        fullWidth
+                        variant="outlined"
+                      >
+                        {statesAndUTs.map((val, i) => (
+                          <MenuItem value={val} key={i}>
+                            {val ?? "NA"}
+                          </MenuItem>
+                        ))}
+                      </Select>
                     </Grid>
                     <Grid item xs={6}>
+                      <InputLabel>Block</InputLabel>
+                      <Select
+                        value={newdoctorDetails.block || ""}
+                        onChange={(e) =>
+                          setNewdoctorDetails({
+                            ...newdoctorDetails,
+                            block: e.target.value,
+                          })
+                        }
+                        fullWidth
+                        variant="outlined"
+                      >
+                        {districtToBlockMap.map(
+                          (m, i) =>
+                            m.district === newdoctorDetails.district &&
+                            m.blocks.map((b, j) => (
+                              <MenuItem value={b} key={j}>
+                                {b ?? "NA"}
+                              </MenuItem>
+                            ))
+                        )}
+                      </Select>
+                    </Grid>
+                    <Grid item xs={6}>
+                      <InputLabel>Gender</InputLabel>
                       <Select
                         label="Select Gender"
                         renderValue={(selected) => selected || `Select Gender`}
@@ -428,6 +439,20 @@ const SamplePage = () => {
                         <MenuItem value="female">Female</MenuItem>
                         <MenuItem value="other">Other</MenuItem>
                       </Select>
+                    </Grid>
+                    <Grid item xs={6}>
+                      <TextField
+                        label="Pincode"
+                        variant="outlined"
+                        fullWidth
+                        value={newdoctorDetails.pincode || ""}
+                        onChange={(e) =>
+                          setNewdoctorDetails({
+                            ...newdoctorDetails,
+                            pincode: parseInt(e.target.value) || 0,
+                          })
+                        }
+                      />
                     </Grid>
                     <Grid item xs={6}>
                       <TextField

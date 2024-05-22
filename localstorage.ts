@@ -1,6 +1,6 @@
 // cookies.ts
 import Cookies from "js-cookie";
-import { clearCookie } from "./utils/auth";
+import { clearCookie } from "./utils/utils";
 
 export const loadState = () => {
   try {

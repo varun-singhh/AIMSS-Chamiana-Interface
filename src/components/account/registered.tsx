@@ -1,6 +1,6 @@
 import { Button, Stack, Typography, Modal } from "@mui/material";
 import React, { useEffect, useState } from "react";
-import { clearCookie } from "../../../utils/auth";
+import { clearCookie } from "../../../utils/utils";
 import { useRouter } from "next/router";
 
 const registered = ({ open, handleOpen }: any) => {
